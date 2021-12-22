@@ -4,6 +4,7 @@ import (
 	"disspace/business/threads"
 	"disspace/controllers"
 	"disspace/controllers/threads/responses"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
@@ -24,7 +25,7 @@ func (controller *ThreadController) GetAll(c echo.Context) error {
 
 	result, err := controller.ThreadUseCase.GetAll(ctx)
 	if err != nil {
-		return err
+		return controllers.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
 
 	for _, item := range result {
