@@ -7,9 +7,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func Connect_to_db(ctx context.Context) (*mongo.Database, error) {
+func ConnectDB(ctx context.Context) (*mongo.Database, error) {
 	clientOptions := options.Client()
-	clientOptions.ApplyURI("mongodb+srv://admin:26QulskduMYF9ns9@disspace.vltti.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+	clientOptions.ApplyURI("mongodb://admin:26QulskduMYF9ns9@disspace-shard-00-00.vltti.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-e260ru-shard-0&authSource=admin&retryWrites=true&w=majority")
 	client, err := mongo.NewClient(clientOptions)
 	if err != nil {
 		return nil, err
@@ -19,6 +19,6 @@ func Connect_to_db(ctx context.Context) (*mongo.Database, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	return client.Database("disspace"), nil
+	db := client.Database("disspace")
+	return db, nil
 }

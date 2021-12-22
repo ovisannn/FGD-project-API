@@ -9,7 +9,7 @@ import (
 
 func main() {
 	var ctx = context.Background()
-	db, err := _mongoDriver.Connect_to_db(ctx)
+	db, err := _mongoDriver.ConnectDB(ctx)
 	fmt.Println(db, err)
 
 }
