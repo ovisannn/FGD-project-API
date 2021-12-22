@@ -13,31 +13,12 @@ import (
 	_threadRepository "disspace/drivers/databases/threads"
 
 	"github.com/labstack/echo/v4"
-	// "go.mongodb.org/mongo-driver/bson"
 )
 
 func main() {
-	// Start Try
+
 	var ctx = context.Background()
 	db, _ := _mongoDriver.ConnectToDB(ctx)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// cursor, err := db.Collection("threads").Find(ctx, bson.D{})
-
-	// var results []bson.M
-	// if err = cursor.All(ctx, &results); err != nil {
-	// 	panic(err)
-	// }
-	// for _, result := range results {
-	// 	output, err := json.MarshalIndent(result, "", "    ")
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// 	fmt.Printf("%s\n", output)
-	// }
-	// End Try
 
 	e := echo.New()
 	timeoutContext := time.Duration(20 * time.Second)
