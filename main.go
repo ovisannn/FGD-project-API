@@ -18,7 +18,7 @@ import (
 func main() {
 
 	var ctx = context.Background()
-	db, _ := _mongoDriver.ConnectToDB(ctx)
+	db, _ := _mongoDriver.ConnectDB(ctx)
 
 	e := echo.New()
 	timeoutContext := time.Duration(20 * time.Second)

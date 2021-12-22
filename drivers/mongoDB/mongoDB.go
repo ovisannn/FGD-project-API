@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func ConnectToDB(ctx context.Context) (*mongo.Database, error) {
+func ConnectDB(ctx context.Context) (*mongo.Database, error) {
 	clientOptions := options.Client()
 	clientOptions.ApplyURI("mongodb://admin:26QulskduMYF9ns9@disspace-shard-00-00.vltti.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-e260ru-shard-0&authSource=admin&retryWrites=true&w=majority")
 	client, err := mongo.NewClient(clientOptions)
