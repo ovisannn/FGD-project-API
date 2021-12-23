@@ -24,3 +24,11 @@ func (useCase *ThreadUseCase) GetAll(ctx context.Context) ([]Domain, error) {
 	}
 	return result, nil
 }
+
+func (useCase *ThreadUseCase) Create(ctx context.Context, threadDomain *Domain) (Domain, error) {
+	result, err := useCase.threadRepo.Create(ctx, threadDomain)
+	if err != nil {
+		return Domain{}, err
+	}
+	return result, nil
+}

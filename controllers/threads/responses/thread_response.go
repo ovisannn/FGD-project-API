@@ -7,11 +7,11 @@ import (
 
 type ThreadResponse struct {
 	ID        string    `json:"_id"`
-	Title     string    `json:"title"`
-	Content   string    `json:"content"`
-	ImageUrl  string    `json:"image_url"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Title     string    `json:"title,omitempty"`
+	Content   string    `json:"content,omitempty"`
+	ImageUrl  string    `json:"image_url,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
 func FromDomain(domain threads.Domain) ThreadResponse {

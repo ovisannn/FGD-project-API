@@ -6,7 +6,7 @@ import (
 )
 
 type Domain struct {
-	ID        string    `bson:"_id"`
+	ID        string    `bson:"_id,omitempty"`
 	Title     string    `bson:"title"`
 	Content   string    `bson:"content"`
 	ImageUrl  string    `bson:"image_url"`
@@ -18,8 +18,10 @@ type Domain struct {
 
 type UseCase interface {
 	GetAll(ctx context.Context) ([]Domain, error)
+	Create(ctx context.Context, data *Domain) (Domain, error)
 }
 
 type Repository interface {
 	GetAll(ctx context.Context) ([]Domain, error)
+	Create(ctx context.Context, data *Domain) (Domain, error)
 }
