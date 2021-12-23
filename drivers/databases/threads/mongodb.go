@@ -3,7 +3,6 @@ package threads
 import (
 	"context"
 	"disspace/business/threads"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -30,6 +29,5 @@ func (repository *MongoDBThreadRepository) GetAll(ctx context.Context) ([]thread
 		return []threads.Domain{}, err
 	}
 	
-	fmt.Println(result)
 	return result, nil
 }

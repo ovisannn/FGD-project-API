@@ -1,0 +1,15 @@
+{
+  "database": {
+    "username": "admin",
+    "password": "26QulskduMYF9ns9",
+    "host": "disspace-shard-00-00.vltti.mongodb.net",
+    "port": "27017",
+    "name": "disspace"
+  },
+  "context": {
+    "timeout": 10
+  },
+  "server": {
+    "address": ":8080"
+  }
+}
