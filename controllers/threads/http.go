@@ -33,3 +33,15 @@ func (controller *ThreadController) GetAll(c echo.Context) error {
 	}
 	return controllers.NewSuccessResponse(c, threads)
 }
+
+func (controller *ThreadController) GetByID(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	id := c.Param("id")
+
+	result, err := controller.ThreadUseCase.GetByID(ctx, id)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	return controllers.NewSuccessResponse(c, responses.FromDomain(result))
+}

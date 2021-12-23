@@ -24,3 +24,11 @@ func (useCase *ThreadUseCase) GetAll(ctx context.Context) ([]Domain, error) {
 	}
 	return result, nil
 }
+
+func (useCase *ThreadUseCase) GetByID(ctx context.Context, id string) (Domain, error) {
+	result, err := useCase.threadRepo.GetByID(ctx, id)
+	if err != nil {
+		return Domain{}, err
+	}
+	return result, err
+}

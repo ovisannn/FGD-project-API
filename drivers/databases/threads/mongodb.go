@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -29,7 +30,22 @@ func (repository *MongoDBThreadRepository) GetAll(ctx context.Context) ([]thread
 	if err = cursor.All(ctx, &result); err != nil {
 		return []threads.Domain{}, err
 	}
-	
+
 	fmt.Println(result)
 	return result, nil
+}
+
+func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id string) (threads.Domain, error) {
+	result := Thread{}
+
+	convert, errorConvert := primitive.ObjectIDFromHex(id)
+	if errorConvert != nil {
+		panic(errorConvert)
+	}
+
+	err := repository.Conn.Collection("threads").FindOne(ctx, bson.D{{"_id", convert}}).Decode(&result)
+	if err != nil {
+		panic(err)
+	}
+	return result.ToDomain(), nil
 }
