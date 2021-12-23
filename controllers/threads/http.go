@@ -41,7 +41,7 @@ func (controller *ThreadController) GetByID(c echo.Context) error {
 
 	result, err := controller.ThreadUseCase.GetByID(ctx, id)
 	if err != nil {
-		return controllers.NewErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
 	return controllers.NewSuccessResponse(c, responses.FromDomain(result))
 }

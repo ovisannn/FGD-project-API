@@ -2,6 +2,7 @@ package threads
 
 import (
 	"context"
+	"disspace/helpers/messages"
 	"time"
 )
 
@@ -28,7 +29,7 @@ func (useCase *ThreadUseCase) GetAll(ctx context.Context) ([]Domain, error) {
 func (useCase *ThreadUseCase) GetByID(ctx context.Context, id string) (Domain, error) {
 	result, err := useCase.threadRepo.GetByID(ctx, id)
 	if err != nil {
-		return Domain{}, err
+		return Domain{}, messages.ErrInvalidThreadID
 	}
-	return result, err
+	return result, nil
 }

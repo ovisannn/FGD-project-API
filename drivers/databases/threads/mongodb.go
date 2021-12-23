@@ -40,7 +40,7 @@ func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id strin
 
 	convert, errorConvert := primitive.ObjectIDFromHex(id)
 	if errorConvert != nil {
-		panic(errorConvert)
+		return threads.Domain{}, errorConvert
 	}
 
 	err := repository.Conn.Collection("threads").FindOne(ctx, bson.D{{Key: "_id", Value: convert}}).Decode(&result)
