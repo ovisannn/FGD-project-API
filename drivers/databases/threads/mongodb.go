@@ -5,6 +5,7 @@ import (
 	"disspace/business/threads"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -30,4 +31,16 @@ func (repository *MongoDBThreadRepository) GetAll(ctx context.Context) ([]thread
 	}
 	
 	return result, nil
+}
+
+func (repository *MongoDBThreadRepository) Create(ctx context.Context, threadDomain *threads.Domain) (threads.Domain, error) {
+	thread := FromDomain(*threadDomain)
+
+	cursor, err := repository.Conn.Collection("threads").InsertOne(ctx, thread)
+	if err != nil {
+		return threads.Domain{}, err
+	}
+
+	threadId := cursor.InsertedID.(primitive.ObjectID).Hex()
+	return threads.Domain{ID: threadId}, nil
 }
