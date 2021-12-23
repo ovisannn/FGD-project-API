@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log"
 	"time"
 
@@ -13,15 +12,31 @@ import (
 	_threadRepository "disspace/drivers/databases/threads"
 
 	"github.com/labstack/echo/v4"
+	"github.com/spf13/viper"
 )
 
-func main() {
+func init() {
+	viper.SetConfigFile("app/config.json")
+	err := viper.ReadInConfig()
 
-	var ctx = context.Background()
-	db, _ := _mongoDriver.ConnectDB(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+}
+
+func main() {
+	config := _mongoDriver.Config{
+		Username: viper.GetString("database.username"),
+		Password: viper.GetString("database.password"),
+		Host:     viper.GetString("database.host"),
+		Port:     viper.GetString("database.port"),
+		Name:     viper.GetString("database.name"),
+	}
+	db, _ := config.ConnectDB()
 
 	e := echo.New()
-	timeoutContext := time.Duration(20 * time.Second)
+	timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 
 	threadRepository := _threadRepository.NewMongoDBThreadRepository(db)
 	threadUseCase := _threadUseCase.NewThreadUseCase(threadRepository, timeoutContext)
@@ -32,5 +47,5 @@ func main() {
 	}
 
 	routesInit.RouteRegister(e)
-	log.Fatal(e.Start(":8080"))
+	log.Fatal(e.Start(viper.GetString("server.address")))
 }
