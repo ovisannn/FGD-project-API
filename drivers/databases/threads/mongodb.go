@@ -43,7 +43,8 @@ func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id strin
 		return threads.Domain{}, errorConvert
 	}
 
-	err := repository.Conn.Collection("threads").FindOne(ctx, bson.D{{Key: "_id", Value: convert}}).Decode(&result)
+	filter := bson.D{{Key: "_id", Value: convert}}
+	err := repository.Conn.Collection("threads").FindOne(ctx, filter).Decode(&result)
 	if err != nil {
 		panic(err)
 	}
