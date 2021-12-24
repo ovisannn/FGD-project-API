@@ -12,6 +12,7 @@ import (
 	_threadRepository "disspace/drivers/databases/threads"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 )
 
@@ -36,6 +37,7 @@ func main() {
 	db, _ := config.ConnectDB()
 
 	e := echo.New()
+	e.Pre(middleware.RemoveTrailingSlash())
 	timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 
 	threadRepository := _threadRepository.NewMongoDBThreadRepository(db)
