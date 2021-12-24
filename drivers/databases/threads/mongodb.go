@@ -44,3 +44,30 @@ func (repository *MongoDBThreadRepository) Create(ctx context.Context, threadDom
 	threadId := cursor.InsertedID.(primitive.ObjectID).Hex()
 	return threads.Domain{ID: threadId}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+func (repository *MongoDBThreadRepository) Delete(ctx context.Context, id string) error {
+	convert, errorConvert := primitive.ObjectIDFromHex(id)
+	if errorConvert != nil {
+		return errorConvert
+	}
+	filter := bson.D{{Key: "_id", Value: convert}}
+	_, err := repository.Conn.Collection("threads").DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	return nil
+}
