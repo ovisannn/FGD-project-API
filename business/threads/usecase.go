@@ -32,3 +32,28 @@ func (useCase *ThreadUseCase) Create(ctx context.Context, threadDomain *Domain) 
 	}
 	return result, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+func (useCase *ThreadUseCase) Update(ctx context.Context, threadDomain *Domain, id string) error {
+	err := useCase.threadRepo.Update(ctx, threadDomain, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
