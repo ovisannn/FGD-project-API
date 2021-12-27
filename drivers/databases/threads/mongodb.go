@@ -45,6 +45,19 @@ func (repository *MongoDBThreadRepository) Create(ctx context.Context, threadDom
 	return threads.Domain{ID: threadId}, nil
 }
 
+func (repository *MongoDBThreadRepository) Delete(ctx context.Context, id string) error {
+	convert, errorConvert := primitive.ObjectIDFromHex(id)
+	if errorConvert != nil {
+		return errorConvert
+	}
+	filter := bson.D{{Key: "_id", Value: convert}}
+	_, err := repository.Conn.Collection("threads").DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id string) (threads.Domain, error) {
 	result := Thread{}
 
@@ -61,32 +74,6 @@ func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id strin
 	return result.ToDomain(), nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func (repository *MongoDBThreadRepository) Update(ctx context.Context, threadDomain *threads.Domain, id string) error {
 	thread := FromDomain(*threadDomain)
 
@@ -102,3 +89,4 @@ func (repository *MongoDBThreadRepository) Update(ctx context.Context, threadDom
 	}
 	return nil
 }
+

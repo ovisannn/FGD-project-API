@@ -60,27 +60,17 @@ func (controller *ThreadController) GetByID(c echo.Context) error {
 	return controllers.NewSuccessResponse(c, responses.FromDomain(result))
 }
 
+func (controller *ThreadController) Delete(c echo.Context) error {
+	ctx := c.Request().Context()
 
+	id := c.Param("id")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	err := controller.ThreadUseCase.Delete(ctx, id)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	return controllers.NewSuccessResponse(c, "successfully deleted thread")
+}
 
 
 func (controller *ThreadController) Update(c echo.Context) error {
