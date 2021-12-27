@@ -45,6 +45,21 @@ func (repository *MongoDBThreadRepository) Create(ctx context.Context, threadDom
 	return threads.Domain{ID: threadId}, nil
 }
 
+func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id string) (threads.Domain, error) {
+	result := Thread{}
+
+	convert, errorConvert := primitive.ObjectIDFromHex(id)
+	if errorConvert != nil {
+		return threads.Domain{}, errorConvert
+	}
+
+	filter := bson.D{{Key: "_id", Value: convert}}
+	err := repository.Conn.Collection("threads").FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		panic(err)
+	}
+	return result.ToDomain(), nil
+}
 
 
 

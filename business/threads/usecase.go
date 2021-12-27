@@ -34,6 +34,13 @@ func (useCase *ThreadUseCase) Create(ctx context.Context, threadDomain *Domain) 
 	return result, nil
 }
 
+func (useCase *ThreadUseCase) GetByID(ctx context.Context, id string) (Domain, error) {
+	result, err := useCase.threadRepo.GetByID(ctx, id)
+	if err != nil {
+		return Domain{}, messages.ErrInvalidThreadID
+	}
+	return result, nil
+}
 
 
 
