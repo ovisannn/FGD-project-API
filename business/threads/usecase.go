@@ -41,3 +41,27 @@ func (useCase *ThreadUseCase) GetByID(ctx context.Context, id string) (Domain, e
 	}
 	return result, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+func (useCase *ThreadUseCase) Update(ctx context.Context, threadDomain *Domain, id string) error {
+	err := useCase.threadRepo.Update(ctx, threadDomain, id)
+	if err != nil {
+		return messages.ErrInvalidThreadID
+	}
+	return nil
+}

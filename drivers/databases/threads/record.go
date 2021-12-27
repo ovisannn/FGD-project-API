@@ -7,7 +7,7 @@ import (
 
 type Thread struct {
 	ID        string    `json:"_id,omitempty" bson:"_id,omitempty"`
-	Title     string    `json:"title" bson:"title"`
+	Title     string    `json:"title,omitempty" bson:"title,omitempty"`
 	Content   string    `json:"content,omitempty" bson:"content,omitempty"`
 	ImageUrl  string    `json:"image_url,omitempty" bson:"image_url,omitempty"`
 	CreatedAt time.Time `json:"created_at" bson:"created_at"`

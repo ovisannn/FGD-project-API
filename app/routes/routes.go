@@ -12,9 +12,10 @@ type ControllerList struct {
 
 func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute := e.Group("/v1")
-	
+
 	// Threads
 	baseRoute.GET("/threads", ctrl.ThreadController.GetAll)
 	baseRoute.POST("/threads", ctrl.ThreadController.Create)
   baseRoute.GET("/threads/:id", ctrl.ThreadController.GetByID)
+	baseRoute.PATCH("/threads/:id", ctrl.ThreadController.Update)
 }

@@ -29,6 +29,7 @@ func (repository *MongoDBThreadRepository) GetAll(ctx context.Context) ([]thread
 	if err = cursor.All(ctx, &result); err != nil {
 		return []threads.Domain{}, err
 	}
+
 	return result, nil
 }
 
@@ -58,4 +59,46 @@ func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id strin
 		panic(err)
 	}
 	return result.ToDomain(), nil
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+func (repository *MongoDBThreadRepository) Update(ctx context.Context, threadDomain *threads.Domain, id string) error {
+	thread := FromDomain(*threadDomain)
+
+	convert, errorConvert := primitive.ObjectIDFromHex(id)
+	if errorConvert != nil {
+		return errorConvert
+	}
+
+	update := bson.D{{Key: "$set", Value: thread}}
+	_, err := repository.Conn.Collection("threads").UpdateByID(ctx, convert, update)
+	if err != nil {
+		return err
+	}
+	return nil
 }
