@@ -3,6 +3,7 @@ package threads
 import (
 	"disspace/business/threads"
 	"disspace/controllers"
+	"disspace/controllers/threads/requests"
 	"disspace/controllers/threads/responses"
 	"net/http"
 
@@ -34,6 +35,19 @@ func (controller *ThreadController) GetAll(c echo.Context) error {
 	return controllers.NewSuccessResponse(c, threads)
 }
 
+func (controller *ThreadController) Create(c echo.Context) error {
+	createThread := requests.Thread{}
+	c.Bind(&createThread)
+
+	ctx := c.Request().Context()
+
+	result, err := controller.ThreadUseCase.Create(ctx, createThread.ToDomain())
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	return controllers.NewSuccessResponse(c, responses.FromDomain(result))
+}
+
 func (controller *ThreadController) GetByID(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -42,6 +56,6 @@ func (controller *ThreadController) GetByID(c echo.Context) error {
 	result, err := controller.ThreadUseCase.GetByID(ctx, id)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
-	}
+    	}
 	return controllers.NewSuccessResponse(c, responses.FromDomain(result))
 }

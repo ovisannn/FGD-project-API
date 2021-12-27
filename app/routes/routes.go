@@ -15,5 +15,6 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	
 	// Threads
 	baseRoute.GET("/threads", ctrl.ThreadController.GetAll)
-	baseRoute.GET("/threads/:id", ctrl.ThreadController.GetByID)
+	baseRoute.POST("/threads", ctrl.ThreadController.Create)
+  baseRoute.GET("/threads/:id", ctrl.ThreadController.GetByID)
 }
