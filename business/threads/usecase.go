@@ -2,6 +2,7 @@ package threads
 
 import (
 	"context"
+	"disspace/helpers/messages"
 	"time"
 )
 
@@ -31,4 +32,29 @@ func (useCase *ThreadUseCase) Create(ctx context.Context, threadDomain *Domain) 
 		return Domain{}, err
 	}
 	return result, nil
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+func (useCase *ThreadUseCase) Update(ctx context.Context, threadDomain *Domain, id string) error {
+	err := useCase.threadRepo.Update(ctx, threadDomain, id)
+	if err != nil {
+		return messages.ErrInvalidThreadID
+	}
+	return nil
 }
