@@ -58,6 +58,21 @@ func (repository *MongoDBThreadRepository) Delete(ctx context.Context, id string
 	return nil
 }
 
+func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id string) (threads.Domain, error) {
+	result := Thread{}
+
+	convert, errorConvert := primitive.ObjectIDFromHex(id)
+	if errorConvert != nil {
+		return threads.Domain{}, errorConvert
+	}
+
+	filter := bson.D{{Key: "_id", Value: convert}}
+	err := repository.Conn.Collection("threads").FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		panic(err)
+	}
+	return result.ToDomain(), nil
+}
 
 func (repository *MongoDBThreadRepository) Update(ctx context.Context, threadDomain *threads.Domain, id string) error {
 	thread := FromDomain(*threadDomain)

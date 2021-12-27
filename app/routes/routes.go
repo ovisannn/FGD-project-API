@@ -17,5 +17,6 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.GET("/threads", ctrl.ThreadController.GetAll)
 	baseRoute.POST("/threads", ctrl.ThreadController.Create)
 	baseRoute.DELETE("/threads/:id", ctrl.ThreadController.Delete)
+  baseRoute.GET("/threads/:id", ctrl.ThreadController.GetByID)
 	baseRoute.PATCH("/threads/:id", ctrl.ThreadController.Update)
 }
