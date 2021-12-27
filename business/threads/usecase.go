@@ -34,14 +34,6 @@ func (useCase *ThreadUseCase) Create(ctx context.Context, threadDomain *Domain) 
 	return result, nil
 }
 
-
-
-
-
-
-
-
-
 func (useCase *ThreadUseCase) Delete(ctx context.Context, id string) error {
 	err := useCase.threadRepo.Delete(ctx, id)
 	if err != nil {
@@ -49,3 +41,13 @@ func (useCase *ThreadUseCase) Delete(ctx context.Context, id string) error {
 	}
 	return nil
 }
+
+
+func (useCase *ThreadUseCase) Update(ctx context.Context, threadDomain *Domain, id string) error {
+	err := useCase.threadRepo.Update(ctx, threadDomain, id)
+	if err != nil {
+		return messages.ErrInvalidThreadID
+	}
+	return nil
+}
+
