@@ -1,13 +1,15 @@
 package routes
 
 import (
+	"disspace/controllers/categories"
 	"disspace/controllers/threads"
 
 	"github.com/labstack/echo/v4"
 )
 
 type ControllerList struct {
-	ThreadController threads.ThreadController
+	ThreadController     threads.ThreadController
+	CategoriesController categories.CategoriesController
 }
 
 func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
@@ -17,6 +19,10 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.GET("/threads", ctrl.ThreadController.GetAll)
 	baseRoute.POST("/threads", ctrl.ThreadController.Create)
 	baseRoute.DELETE("/threads/:id", ctrl.ThreadController.Delete)
-  baseRoute.GET("/threads/:id", ctrl.ThreadController.GetByID)
+	baseRoute.GET("/threads/:id", ctrl.ThreadController.GetByID)
 	baseRoute.PATCH("/threads/:id", ctrl.ThreadController.Update)
+
+	baseRoute.GET("/categories", ctrl.CategoriesController.GetAll)
+	baseRoute.POST("/categories", ctrl.CategoriesController.Create)
+	baseRoute.GET("/categories/:id", ctrl.CategoriesController.GetByID)
 }

@@ -1,4 +1,4 @@
-package categories
+package request
 
 import (
 	"disspace/business/categories"
@@ -16,24 +16,13 @@ type Categories struct {
 	ColorTheme string `bson:"color_theme" json:"color_theme"`
 }
 
-func (record *Categories) ToDomain() categories.Domain {
-	return categories.Domain{
+func (record *Categories) ToDomain() *categories.Domain {
+	return &categories.Domain{
 		ID:           record.ID,
 		CategoryName: record.CategoryName,
 		Description:  record.Description,
 		Rules:        record.Rules,
 		Header:       record.Header,
 		ColorTheme:   record.ColorTheme,
-	}
-}
-
-func FromDomain(domain categories.Domain) Categories {
-	return Categories{
-		ID:           domain.ID,
-		CategoryName: domain.CategoryName,
-		Description:  domain.Description,
-		Rules:        domain.Rules,
-		Header:       domain.Header,
-		ColorTheme:   domain.ColorTheme,
 	}
 }
