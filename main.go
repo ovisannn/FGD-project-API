@@ -11,6 +11,10 @@ import (
 	_threadController "disspace/controllers/threads"
 	_threadRepository "disspace/drivers/databases/threads"
 
+	_categoryUseCase "disspace/business/categories"
+	_categoryController "disspace/controllers/categories"
+	_categoryRepository "disspace/drivers/databases/categories"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
@@ -44,8 +48,13 @@ func main() {
 	threadUseCase := _threadUseCase.NewThreadUseCase(threadRepository, timeoutContext)
 	threadController := _threadController.NewThreadController(threadUseCase)
 
+	categoriesRepository := _categoryRepository.NewMongoDBCategoriesRepository(db)
+	categoryUseCase := _categoryUseCase.NewCategoriesUseCase(categoriesRepository)
+	categoryController := _categoryController.NewCategoriesController(categoryUseCase)
+
 	routesInit := _routes.ControllerList{
-		ThreadController: *threadController,
+		ThreadController:     *threadController,
+		CategoriesController: *categoryController,
 	}
 
 	routesInit.RouteRegister(e)
