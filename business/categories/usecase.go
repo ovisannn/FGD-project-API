@@ -39,3 +39,19 @@ func (UseCase *CategoriresUseCase) GetByID(ctx context.Context, id string) (Doma
 	}
 	return result, nil
 }
+
+func (UseCase *CategoriresUseCase) Delete(ctx context.Context, id string) error {
+	err := UseCase.categoriesRepo.Delete(ctx, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (UseCase *CategoriresUseCase) Update(ctx context.Context, data *Domain, id string) error {
+	err := UseCase.categoriesRepo.Update(ctx, data, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

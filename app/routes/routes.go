@@ -26,4 +26,6 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.GET("/categories", ctrl.CategoriesController.GetAll)
 	baseRoute.GET("/categories/:id", ctrl.CategoriesController.GetByID)
 	baseRoute.POST("/categories", ctrl.CategoriesController.Create)
+	baseRoute.DELETE("/categories/:id", ctrl.CategoriesController.Delete)
+	baseRoute.PATCH("/categories/:id", ctrl.CategoriesController.Update)
 }

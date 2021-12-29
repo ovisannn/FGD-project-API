@@ -44,11 +44,11 @@ func (controller *CategoriesController) Create(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	result, err := controller.CategoriesUseCase.Create(ctx, createCategory.ToDomain())
+	_, err := controller.CategoriesUseCase.Create(ctx, createCategory.ToDomain())
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	return controllers.NewSuccessResponse(c, response.FromDomain(result))
+	return controllers.NewSuccessResponse(c, "successfully created new category")
 }
 
 func (controller *CategoriesController) GetByID(c echo.Context) error {
@@ -59,4 +59,29 @@ func (controller *CategoriesController) GetByID(c echo.Context) error {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
 	return controllers.NewSuccessResponse(c, response.FromDomain(result))
+}
+
+func (controller *CategoriesController) Delete(c echo.Context) error {
+	ctx := c.Request().Context()
+	id := c.Param("id")
+	err := controller.CategoriesUseCase.Delete(ctx, id)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	return controllers.NewSuccessResponse(c, "successfully deleted category")
+}
+
+func (controller *CategoriesController) Update(c echo.Context) error {
+	ctx := c.Request().Context()
+	data := request.Categories{}
+	c.Bind(&data)
+	id := c.Param("id")
+	// fmt.Println(data)
+	err := controller.CategoriesUseCase.Update(ctx, data.ToDomain(), id)
+
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	return controllers.NewSuccessResponse(c, "successfully updated category")
+
 }

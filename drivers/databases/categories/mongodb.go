@@ -59,3 +59,31 @@ func (repository *MongoDBCategoriesRepository) GetByID(ctx context.Context, id s
 
 	return result.ToDomain(), nil
 }
+
+func (repository *MongoDBCategoriesRepository) Delete(ctx context.Context, id string) error {
+	convert, errConvert := primitive.ObjectIDFromHex(id)
+	if errConvert != nil {
+		return errConvert
+	}
+	_, err := repository.Conn.Collection("categories").DeleteOne(ctx, bson.D{{Key: "_id", Value: convert}})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repository *MongoDBCategoriesRepository) Update(ctx context.Context, data *categories.Domain, id string) error {
+	category := FromDomain(*data)
+
+	convert, errConv := primitive.ObjectIDFromHex(id)
+	if errConv != nil {
+		return errConv
+	}
+	_, err := repository.Conn.Collection("categories").UpdateByID(ctx, convert, bson.D{{Key: "$set", Value: category}})
+	if err != nil {
+		return err
+	}
+	return nil
+}
