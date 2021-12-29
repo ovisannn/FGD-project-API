@@ -47,13 +47,12 @@ func (repository *MongoDBCategoriesRepository) Create(ctx context.Context, data 
 
 func (repository *MongoDBCategoriesRepository) GetByID(ctx context.Context, id string) (categories.Domain, error) {
 	result := Categories{}
-	convert, errConvert := primitive.ObjectIDFromHex(id)
-	if errConvert != nil {
-		return categories.Domain{}, errConvert
+	convert, errorConvert := primitive.ObjectIDFromHex(id)
+	if errorConvert != nil {
+		return categories.Domain{}, errorConvert
 	}
-	find := bson.D{{Key: "_id", Value: convert}}
-	err := repository.Conn.Collection("categories").FindOne(ctx, find).Decode(result)
-
+	filter := bson.D{{Key: "_id", Value: convert}}
+	err := repository.Conn.Collection("categories").FindOne(ctx, filter).Decode(&result)
 	if err != nil {
 		panic(err)
 	}

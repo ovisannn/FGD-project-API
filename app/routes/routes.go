@@ -22,7 +22,8 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.GET("/threads/:id", ctrl.ThreadController.GetByID)
 	baseRoute.PATCH("/threads/:id", ctrl.ThreadController.Update)
 
+	//categories
 	baseRoute.GET("/categories", ctrl.CategoriesController.GetAll)
-	baseRoute.POST("/categories", ctrl.CategoriesController.Create)
 	baseRoute.GET("/categories/:id", ctrl.CategoriesController.GetByID)
+	baseRoute.POST("/categories", ctrl.CategoriesController.Create)
 }
