@@ -3,6 +3,7 @@ package routes
 import (
 	"disspace/controllers/categories"
 	"disspace/controllers/threads"
+	"disspace/controllers/votes"
 
 	"github.com/labstack/echo/v4"
 )
@@ -10,6 +11,7 @@ import (
 type ControllerList struct {
 	ThreadController     threads.ThreadController
 	CategoriesController categories.CategoriesController
+	VoteController       votes.VoteController
 }
 
 func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
@@ -28,4 +30,7 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.POST("/categories", ctrl.CategoriesController.Create)
 	baseRoute.DELETE("/categories/:id", ctrl.CategoriesController.Delete)
 	baseRoute.PATCH("/categories/:id", ctrl.CategoriesController.Update)
+
+	// Votes
+	baseRoute.POST("/users/votes", ctrl.VoteController.Create)
 }

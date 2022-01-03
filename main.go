@@ -15,6 +15,10 @@ import (
 	_categoryController "disspace/controllers/categories"
 	_categoryRepository "disspace/drivers/databases/categories"
 
+	_voteUseCase "disspace/business/votes"
+	_voteController "disspace/controllers/votes"
+	_voteRepository "disspace/drivers/databases/votes"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
@@ -52,9 +56,14 @@ func main() {
 	categoryUseCase := _categoryUseCase.NewCategoriesUseCase(categoriesRepository)
 	categoryController := _categoryController.NewCategoriesController(categoryUseCase)
 
+	voteRepository := _voteRepository.NewMongoDBVoteRepository(db)
+	voteUseCase := _voteUseCase.NewVoteUseCase(voteRepository, timeoutContext)
+	voteController := _voteController.NewVoteController(voteUseCase)
+
 	routesInit := _routes.ControllerList{
 		ThreadController:     *threadController,
 		CategoriesController: *categoryController,
+		VoteController:       *voteController,
 	}
 
 	routesInit.RouteRegister(e)
