@@ -32,5 +32,5 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.PATCH("/categories/:id", ctrl.CategoriesController.Update)
 
 	// Votes
-	baseRoute.POST("/users/votes", ctrl.VoteController.Create)
+	baseRoute.POST("/users/:id/votes", ctrl.VoteController.Store)
 }

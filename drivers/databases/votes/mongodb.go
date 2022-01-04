@@ -17,16 +17,7 @@ func NewMongoDBVoteRepository(conn *mongo.Database) votes.Repository {
 	}
 }
 
-// func (repository *MongoDBVoteRepository) Create(ctx context.Context, voteDomain *votes.Domain, id string) error {
-// 	vote := FromDomain(*voteDomain)
-
-// 	_, err := repository.Conn.Collection("likes").InsertOne(ctx, vote)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-func (repository *MongoDBVoteRepository) Create(ctx context.Context, voteDomain *votes.Domain) error {
+func (repository *MongoDBVoteRepository) Store(ctx context.Context, voteDomain *votes.Domain, id string) error {
 	vote := FromDomain(*voteDomain)
 
 	_, err := repository.Conn.Collection("likes").InsertOne(ctx, vote)

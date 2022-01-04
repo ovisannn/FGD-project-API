@@ -19,26 +19,16 @@ func NewVoteController(voteUseCase votes.UseCase) *VoteController {
 	}
 }
 
-// func (controller *VoteController) Create(c echo.Context) error {
-// 	createVote := request.Vote{}
-// 	c.Bind(&createVote)
-// 	id := c.Param("id")
-
-// 	ctx := c.Request().Context()
-
-// 	err := controller.VoteUseCase.Create(ctx, createVote.ToDomain(), id)
-// 	if err != nil {
-// 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
-// 	}
-// 	return controllers.NewSuccessResponse(c, "successfully liked")
-// }
-func (controller *VoteController) Create(c echo.Context) error {
-	createVote := request.Vote{}
-	c.Bind(&createVote)
+func (controller *VoteController) Store(c echo.Context) error {
+	storeVote := request.Vote{}
+	c.Bind(&storeVote)
 
 	ctx := c.Request().Context()
 
-	err := controller.VoteUseCase.Create(ctx, createVote.ToDomain())
+	id := c.Param("id")
+	c.Bind(&id)
+
+	err := controller.VoteUseCase.Store(ctx, storeVote.ToDomain(), id)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}

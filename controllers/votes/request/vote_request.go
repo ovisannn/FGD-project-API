@@ -6,7 +6,13 @@ import (
 )
 
 type Vote struct {
-	UserID      string    `json:"user_id" bson:"user_id"`
+	UserID      string    `json:"user_id" bson:"user_id" param:"id"`
+	ReferenceID string    `json:"reference_id" bson:"reference_id"`
+	Status      int       `json:"status" bson:"status"`
+	TimeLike    time.Time `json:"time_like" bson:"time_like"`
+}
+
+type VoteParam struct {
 	ReferenceID string    `json:"reference_id" bson:"reference_id"`
 	Status      int       `json:"status" bson:"status"`
 	TimeLike    time.Time `json:"time_like" bson:"time_like"`

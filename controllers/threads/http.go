@@ -49,7 +49,7 @@ func (controller *ThreadController) Create(c echo.Context) error {
 }
 
 func (controller *ThreadController) GetByID(c echo.Context) error {
-  ctx := c.Request().Context()
+  	ctx := c.Request().Context()
 
 	id := c.Param("id")
 

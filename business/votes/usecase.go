@@ -18,18 +18,11 @@ func NewVoteUseCase(voteRepository Repository, timeout time.Duration) UseCase {
 	}
 }
 
-// func (useCase *VoteUseCase) Create(ctx context.Context, voteDomain *Domain, id string) error {
-// 	err := useCase.voteRepo.Create(ctx, voteDomain, id)
-// 	if err != nil {
-// 		return messages.ErrInvalidUserID
-// 	}
-// 	return nil
-// }
-
-func (useCase *VoteUseCase) Create(ctx context.Context, voteDomain *Domain) error {
-	err := useCase.voteRepo.Create(ctx, voteDomain)
+func (useCase *VoteUseCase) Store(ctx context.Context, voteDomain *Domain, id string) error {
+	err := useCase.voteRepo.Store(ctx, voteDomain, id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
+

@@ -14,11 +14,9 @@ type Domain struct {
 }
 
 type UseCase interface {
-	// Create(ctx context.Context, data *Domain, id string) error
-	Create(ctx context.Context, data *Domain) error
+	Store(ctx context.Context, data *Domain, id string) error
 }
 
 type Repository interface {
-	// Create(ctx context.Context, data *Domain, id string) error
-	Create(ctx context.Context, data *Domain) error
+	Store(ctx context.Context, data *Domain, id string) error
 }
