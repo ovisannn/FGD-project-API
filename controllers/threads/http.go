@@ -77,7 +77,7 @@ func (controller *ThreadController) Update(c echo.Context) error {
 	updateThread := requests.Thread{}
 	c.Bind(&updateThread)
   
-  ctx := c.Request().Context()
+  	ctx := c.Request().Context()
 
 	id := c.Param("id")
   

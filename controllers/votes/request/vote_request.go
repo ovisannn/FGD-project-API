@@ -12,6 +12,10 @@ type Vote struct {
 	TimeLike    time.Time `json:"time_like" bson:"time_like"`
 }
 
+type UpdateVote struct {
+	Status int `json:"status" bson:"status"`
+}
+
 func (request *Vote) ToDomain() *votes.Domain {
 	return &votes.Domain{
 		UserID:      request.UserID,
