@@ -45,6 +45,11 @@ func main() {
 	db, _ := config.ConnectDB()
 
 	e := echo.New()
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:3000"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
+
 	e.Pre(middleware.RemoveTrailingSlash())
 	timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 
