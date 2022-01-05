@@ -4,6 +4,7 @@ import (
 	"disspace/business/votes"
 	"disspace/controllers"
 	"disspace/controllers/votes/request"
+	"disspace/helpers/messages"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -30,7 +31,29 @@ func (controller *VoteController) Store(c echo.Context) error {
 
 	err := controller.VoteUseCase.Store(ctx, storeVote.ToDomain(), id)
 	if err != nil {
+		if err == messages.ErrUnauthorizedUser {
+			return controllers.NewErrorResponse(c, http.StatusUnauthorized, err)
+		} else if err == messages.ErrReferenceNotFound {
+			return controllers.NewErrorResponse(c, http.StatusNotFound, err)
+		}
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
 	return controllers.NewSuccessResponse(c, "successfully liked")
+}
+
+func (controller *VoteController) Update(c echo.Context) error {
+	updateVote := request.UpdateVote{}
+	c.Bind(&updateVote)
+
+	ctx := c.Request().Context()
+
+	id := c.Param("id")
+	refid := c.Param("ref_id")
+
+	err := controller.VoteUseCase.Update(ctx, updateVote.Status, id, refid)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	return controllers.NewSuccessResponse(c, "successfully update vote")
+
 }

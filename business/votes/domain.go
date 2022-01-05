@@ -15,8 +15,10 @@ type Domain struct {
 
 type UseCase interface {
 	Store(ctx context.Context, data *Domain, id string) error
+	Update(ctx context.Context, status int, id string, refid string) error
 }
 
 type Repository interface {
 	Store(ctx context.Context, data *Domain, id string) error
+	Update(ctx context.Context, status int, id string, refid string) error
 }

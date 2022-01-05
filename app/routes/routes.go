@@ -33,4 +33,5 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 
 	// Votes
 	baseRoute.POST("/users/:id/votes", ctrl.VoteController.Store)
+	baseRoute.PUT("/users/:id/votes/:ref_id", ctrl.VoteController.Update)
 }

@@ -26,3 +26,11 @@ func (useCase *VoteUseCase) Store(ctx context.Context, voteDomain *Domain, id st
 	return nil
 }
 
+func (useCase *VoteUseCase) Update(ctx context.Context, status int, id string, refid string) error {
+	err := useCase.voteRepo.Update(ctx, status, id, refid)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
