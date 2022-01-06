@@ -6,9 +6,11 @@ import (
 	"disspace/controllers/votes"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 type ControllerList struct {
+	JWTConfig            middleware.JWTConfig
 	ThreadController     threads.ThreadController
 	CategoriesController categories.CategoriesController
 	VoteController       votes.VoteController

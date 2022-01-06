@@ -72,6 +72,7 @@ func main() {
 	voteController := _voteController.NewVoteController(voteUseCase)
 
 	routesInit := _routes.ControllerList{
+		JWTConfig:            configJWT.Init(),
 		ThreadController:     *threadController,
 		CategoriesController: *categoryController,
 		VoteController:       *voteController,
