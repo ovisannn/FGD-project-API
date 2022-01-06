@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 
+	_middleware "disspace/app/middlewares"
 	_routes "disspace/app/routes"
 	_mongoDriver "disspace/drivers/mongoDB"
 
@@ -42,6 +43,11 @@ func main() {
 		Port:     viper.GetString("database.port"),
 		Name:     viper.GetString("database.name"),
 	}
+	configJWT := _middleware.ConfigJwt{
+		SecretJWT:       viper.GetString(`jwt.secret`),
+		ExpiresDuration: viper.GetInt(`jwt.expired`),
+	}
+
 	db, _ := config.ConnectDB()
 
 	e := echo.New()
@@ -66,6 +72,7 @@ func main() {
 	voteController := _voteController.NewVoteController(voteUseCase)
 
 	routesInit := _routes.ControllerList{
+		JWTConfig:            configJWT.Init(),
 		ThreadController:     *threadController,
 		CategoriesController: *categoryController,
 		VoteController:       *voteController,
