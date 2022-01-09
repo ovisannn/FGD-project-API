@@ -6,13 +6,14 @@ import (
 )
 
 type Domain struct {
-	ID        string    `bson:"_id,omitempty"`
-	ThreadID  string    `bson:"thread_id"`
-	UserID    string    `bson:"user_id"`
-	Text      string    `bson:"text"`
-	NumVotes  int       `bson:"num_votes"`
-	CreatedAt time.Time `bson:"created_at"`
-	UpdatedAt time.Time `bson:"updated_at"`
+	ID          string    `bson:"_id,omitempty"`
+	ThreadID    string    `bson:"thread_id"`
+	UserID      string    `bson:"user_id"`
+	Text        string    `bson:"text"`
+	NumVotes    int       `bson:"num_votes"`
+	NumComments int       `bson:"num_comments"`
+	CreatedAt   time.Time `bson:"created_at"`
+	UpdatedAt   time.Time `bson:"updated_at"`
 }
 
 type UseCase interface {

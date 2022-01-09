@@ -49,14 +49,14 @@ func (controller *ThreadController) Create(c echo.Context) error {
 }
 
 func (controller *ThreadController) GetByID(c echo.Context) error {
-  	ctx := c.Request().Context()
+	ctx := c.Request().Context()
 
 	id := c.Param("id")
 
 	result, err := controller.ThreadUseCase.GetByID(ctx, id)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
-    	}
+	}
 	return controllers.NewSuccessResponse(c, responses.FromDomain(result))
 }
 
@@ -72,15 +72,14 @@ func (controller *ThreadController) Delete(c echo.Context) error {
 	return controllers.NewSuccessResponse(c, "successfully deleted thread")
 }
 
-
 func (controller *ThreadController) Update(c echo.Context) error {
 	updateThread := requests.Thread{}
 	c.Bind(&updateThread)
-  
-  	ctx := c.Request().Context()
+
+	ctx := c.Request().Context()
 
 	id := c.Param("id")
-  
+
 	err := controller.ThreadUseCase.Update(ctx, updateThread.ToDomain(), id)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
