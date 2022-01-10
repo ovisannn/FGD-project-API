@@ -5,6 +5,7 @@ import (
 	"disspace/controllers/comments"
 	"disspace/controllers/reports"
 	"disspace/controllers/threads"
+	"disspace/controllers/user"
 	"disspace/controllers/votes"
 
 	"github.com/labstack/echo/v4"
@@ -16,6 +17,7 @@ type ControllerList struct {
 	ThreadController     threads.ThreadController
 	CategoriesController categories.CategoriesController
 	VoteController       votes.VoteController
+	UserController user.UserController
 	CommentController    comments.CommentController
 	ReportController     reports.ReportController
 }
@@ -41,6 +43,9 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.POST("/users/:id/votes", ctrl.VoteController.Store)
 	baseRoute.PUT("/users/:id/votes/:ref_id", ctrl.VoteController.Update)
 
+	//user
+	baseRoute.POST("/user/register", ctrl.UserController.Register)
+  
 	// Comments
 	baseRoute.POST("/users/:id/comments", ctrl.CommentController.Create)
 	baseRoute.DELETE("/users/:id/comments/:thread_id", ctrl.CommentController.Delete)

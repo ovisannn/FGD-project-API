@@ -20,6 +20,10 @@ import (
 	_voteController "disspace/controllers/votes"
 	_voteRepository "disspace/drivers/databases/votes"
 
+	_userUseCase "disspace/business/user"
+	_userController "disspace/controllers/user"
+	_userRepository "disspace/drivers/databases/user"
+
 	_commentUseCase "disspace/business/comments"
 	_commentController "disspace/controllers/comments"
 	_commentRepository "disspace/drivers/databases/comments"
@@ -27,6 +31,7 @@ import (
 	_reportUseCase "disspace/business/reports"
 	_reportController "disspace/controllers/reports"
 	_reportRepository "disspace/drivers/databases/reports"
+
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -79,6 +84,11 @@ func main() {
 	voteUseCase := _voteUseCase.NewVoteUseCase(voteRepository, timeoutContext)
 	voteController := _voteController.NewVoteController(voteUseCase)
 
+
+	userRepository := _userRepository.NewMongoDBUserRepository(db)
+	userUseCase := _userUseCase.NewUserUseCase(userRepository, timeoutContext)
+	userController := _userController.NewUserController(userUseCase)
+
 	commentRepository := _commentRepository.NewMongoDBCommentRepository(db)
 	commentUseCase := _commentUseCase.NewCommentUseCase(commentRepository, timeoutContext)
 	commentController := _commentController.NewCommentController(commentUseCase)
@@ -87,11 +97,13 @@ func main() {
 	reportUseCase := _reportUseCase.NewReportUseCase(reportRepository, timeoutContext)
 	reportController := _reportController.NewReportController(reportUseCase)
 
+
 	routesInit := _routes.ControllerList{
 		JWTConfig:            configJWT.Init(),
 		ThreadController:     *threadController,
 		CategoriesController: *categoryController,
 		VoteController:       *voteController,
+		UserController: *userController,
 		CommentController:    *commentController,
 		ReportController:     *reportController,
 	}
