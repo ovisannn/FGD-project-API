@@ -48,7 +48,7 @@ func (useCase *ThreadUseCase) GetByID(ctx context.Context, id string) (Domain, e
 	if err != nil {
 		return Domain{}, messages.ErrInvalidThreadID
 	}
-	return result, nil
+	return result, nil 
 }
 
 func (useCase *ThreadUseCase) Update(ctx context.Context, threadDomain *Domain, id string) error {

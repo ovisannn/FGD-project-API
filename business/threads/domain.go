@@ -6,12 +6,14 @@ import (
 )
 
 type Domain struct {
-	ID        string    `bson:"_id,omitempty"`
-	Title     string    `bson:"title"`
-	Content   string    `bson:"content"`
-	ImageUrl  string    `bson:"image_url"`
-	CreatedAt time.Time `bson:"created_at"`
-	UpdatedAt time.Time `bson:"updated_at"`
+	ID          string    `bson:"_id,omitempty"`
+	Title       string    `bson:"title"`
+	Content     string    `bson:"content"`
+	ImageUrl    string    `bson:"image_url"`
+	NumVotes    int       `bson:"num_votes,omitempty"`
+	NumComments int       `bson:"num_comments,omitempty"`
+	CreatedAt   time.Time `bson:"created_at"`
+	UpdatedAt   time.Time `bson:"updated_at"`
 }
 
 type UseCase interface {
