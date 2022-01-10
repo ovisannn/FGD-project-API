@@ -5,6 +5,7 @@ import (
 	"disspace/business/comments"
 	"disspace/helpers/messages"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -49,4 +50,30 @@ func (repository *MongoDBCommentRepository) Create(ctx context.Context, commentD
 
 	commentId := cursor.InsertedID.(primitive.ObjectID).Hex()
 	return comments.Domain{ID: commentId}, nil
+}
+
+func (repository *MongoDBCommentRepository) Delete(ctx context.Context, id string, threadId string) error {
+	// Start Error Handling
+	_, errConvId := primitive.ObjectIDFromHex(id)
+	if errConvId != nil {
+		return messages.ErrInvalidUserID
+	}
+
+	_, errConvThreadId := primitive.ObjectIDFromHex(threadId)
+	if errConvThreadId != nil {
+		return messages.ErrInvalidThreadID
+	}
+	// End Error Handling
+
+	filter := bson.D{{Key: "$and", Value: []interface{}{
+		bson.D{{Key: "user_id", Value: id}}, bson.D{{Key: "thread_id", Value: threadId}},
+	}}}
+	result, err := repository.Conn.Collection("comments").DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	if result.DeletedCount == 0 {
+		return messages.ErrDataNotFound
+	}
+	return nil
 }

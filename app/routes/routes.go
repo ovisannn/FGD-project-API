@@ -41,4 +41,5 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 
 	// Comments
 	baseRoute.POST("/users/:id/comments", ctrl.CommentController.Create)
+	baseRoute.DELETE("/users/:id/comments/:thread_id", ctrl.CommentController.Delete)
 }
