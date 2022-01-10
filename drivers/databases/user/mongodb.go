@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"disspace/business/user"
+	"disspace/helpers/messages"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -22,6 +23,19 @@ func NewMongoDBUserRepository(conn *mongo.Database) user.Repository {
 func (repository *MongoDBUserRepository) Register(ctx context.Context, data *user.UserDomain) (user.UserDomain, error) {
 	// gs://disspace-250a1.appspot.com/profile_pict/profile_default.jpg
 	newUser := UserFromDomain(*data)
+	checkVar := []User{}
+	filter := bson.D{{Key: "username", Value: newUser.Username}}
+	check, errCheck := repository.Conn.Collection("users").Find(ctx, filter)
+	if errCheck != nil {
+		panic(errCheck)
+	}
+	if errCheck = check.All(ctx, &checkVar); errCheck != nil {
+		panic(errCheck)
+	}
+	if len(checkVar) != 0 {
+		return user.UserDomain{}, messages.ErrUsernameAlreadyExist
+	}
+
 	cursor, err := repository.Conn.Collection("users").InsertOne(ctx, newUser)
 	userID := cursor.InsertedID.(primitive.ObjectID).Hex()
 	newProfileUser := UserProfile{
