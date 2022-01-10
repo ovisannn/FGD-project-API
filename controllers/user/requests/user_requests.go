@@ -6,15 +6,15 @@ import (
 )
 
 type User struct {
-	FullName  string    `json:"full_name" bson:"full_name"`
-	Username  string    `json:"username" bson:"username"`
-	Password  string    `json:"password" bson:"password"`
-	Email     string    `json:"email" bson:"email"`
-	Gender    string    `json:"gender" bson:"gender"`
-	Role      int       `json:"role" bson:"role"`
-	Status    string    `json:"status" bson:"status"`
-	CreatedAt time.Time `json:"created_at" bson:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
+	FullName  string    `json:"full_name,omitempty" bson:"full_name,omitempty"`
+	Username  string    `json:"username,omitempty" bson:"username,omitempty"`
+	Password  string    `json:"password,omitempty" bson:"password,omitempty"`
+	Email     string    `json:"email,omitempty" bson:"email,omitempty"`
+	Gender    string    `json:"gender,omitempty" bson:"gender,omitempty"`
+	Role      int       `json:"role,omitempty" bson:"role,omitempty"`
+	Status    string    `json:"status,omitempty" bson:"status,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty" bson:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty" bson:"updated_at,omitempty"`
 }
 
 func (request *User) UserRegisterToDomain() *user.UserDomain {

@@ -20,6 +20,10 @@ import (
 	_voteController "disspace/controllers/votes"
 	_voteRepository "disspace/drivers/databases/votes"
 
+	_userUseCase "disspace/business/user"
+	_userController "disspace/controllers/user"
+	_userRepository "disspace/drivers/databases/user"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
@@ -71,11 +75,16 @@ func main() {
 	voteUseCase := _voteUseCase.NewVoteUseCase(voteRepository, timeoutContext)
 	voteController := _voteController.NewVoteController(voteUseCase)
 
+	userRepository := _userRepository.NewMongoDBUserRepository(db)
+	userUseCase := _userUseCase.NewUserUseCase(userRepository, timeoutContext)
+	userController := _userController.NewUserController(userUseCase)
+
 	routesInit := _routes.ControllerList{
 		JWTConfig:            configJWT.Init(),
 		ThreadController:     *threadController,
 		CategoriesController: *categoryController,
 		VoteController:       *voteController,
+		UserController: *userController,
 	}
 
 	routesInit.RouteRegister(e)

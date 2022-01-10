@@ -23,23 +23,22 @@ func (repository *MongoDBUserRepository) Register(ctx context.Context, data *use
 	newUser := UserFromDomain(*data)
 	cursor, err := repository.Conn.Collection("users").InsertOne(ctx, newUser)
 	userID := cursor.InsertedID.(primitive.ObjectID).Hex()
+	newProfileUser := UserProfile{
+		UserId:     userID,
+		ProfilePict: "gs://disspace-250a1.appspot.com/profile_pict/profile_default.jpg",
+		Bio:        " ",
+		Following:  []string{},
+		Followers:  []string{},
+		Threads:    []string{},
+		Reputation: 0,
+	}
+	_, errProfile := repository.Conn.Collection("user_profile").InsertOne(ctx, newProfileUser)
 	if err != nil {
 		return user.UserDomain{}, err
-	} else {
-		newProfileUser := UserProfile{
-			UserId:     userID,
-			ProfilPict: "gs://disspace-250a1.appspot.com/profile_pict/profile_default.jpg",
-			Bio:        " ",
-			Following:  []string{},
-			Followers:  []string{},
-			Threads:    []string{},
-			Reputation: 0,
-		}
-		_, errProfile := repository.Conn.Collection("user_profile").InsertOne(ctx, newProfileUser)
-		if errProfile != nil {
-			return user.UserDomain{}, errProfile
-		}
 	}
-	return user.UserDomain{ID: userID}, nil
+	if errProfile != nil {
+		return user.UserDomain{}, err
+	}
+	return user.UserDomain{}, nil
 
 }

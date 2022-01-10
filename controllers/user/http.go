@@ -25,7 +25,6 @@ func (controller *UserController) Register(c echo.Context) error {
 	c.Bind(&newUser)
 
 	ctx := c.Request().Context()
-
 	result, err := controller.UserUseCase.Register(ctx, newUser.UserRegisterToDomain())
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusInternalServerError, err)

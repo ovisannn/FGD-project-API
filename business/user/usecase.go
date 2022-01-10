@@ -18,7 +18,7 @@ func NewUserUseCase(UserRepository Repository, timeout time.Duration) UseCase {
 }
 
 func (useCase *UserUseCase) Register(ctx context.Context, data *UserDomain) (UserDomain, error) {
-	result, err := useCase.Register(ctx, data)
+	result, err := useCase.userRepo.Register(ctx, data)
 	if err != nil {
 		return UserDomain{}, err
 	}

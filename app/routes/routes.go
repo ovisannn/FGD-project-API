@@ -3,6 +3,7 @@ package routes
 import (
 	"disspace/controllers/categories"
 	"disspace/controllers/threads"
+	"disspace/controllers/user"
 	"disspace/controllers/votes"
 
 	"github.com/labstack/echo/v4"
@@ -14,6 +15,7 @@ type ControllerList struct {
 	ThreadController     threads.ThreadController
 	CategoriesController categories.CategoriesController
 	VoteController       votes.VoteController
+	UserController user.UserController
 }
 
 func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
@@ -36,4 +38,7 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	// Votes
 	baseRoute.POST("/users/:id/votes", ctrl.VoteController.Store)
 	baseRoute.PUT("/users/:id/votes/:ref_id", ctrl.VoteController.Update)
+
+	//user
+	baseRoute.POST("/user/register", ctrl.UserController.Register)
 }

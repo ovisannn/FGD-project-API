@@ -21,7 +21,7 @@ type UserDomain struct {
 type UserProfileDomain struct {
 	ID         string   `json:"_id,omitempty" bson:"_id,omitempty"`
 	UserId     string   `json:"user_id" bson:"user_id"`
-	ProfilPict string   `json:"profile_pict" bson:"profile_pict"`
+	ProfilePict string   `json:"profile_pict" bson:"profile_pict"`
 	Bio        string   `json:"bio" bson:"bio"`
 	Following  []string `json:"following" bson:"following"`
 	Followers  []string `json:"followers" bson:"followers"`
