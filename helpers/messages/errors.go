@@ -10,4 +10,5 @@ var (
 	ErrUnauthorizedUser    = errors.New("unautorized user")
 	ErrReferenceNotFound   = errors.New("reference not found")
 	ErrDataNotFound        = errors.New("data not found")
+	ErrDuplicatedData      = errors.New("duplicated data")
 )

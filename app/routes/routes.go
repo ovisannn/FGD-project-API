@@ -3,6 +3,7 @@ package routes
 import (
 	"disspace/controllers/categories"
 	"disspace/controllers/comments"
+	"disspace/controllers/reports"
 	"disspace/controllers/threads"
 	"disspace/controllers/votes"
 
@@ -16,6 +17,7 @@ type ControllerList struct {
 	CategoriesController categories.CategoriesController
 	VoteController       votes.VoteController
 	CommentController    comments.CommentController
+	ReportController     reports.ReportController
 }
 
 func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
@@ -42,4 +44,7 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	// Comments
 	baseRoute.POST("/users/:id/comments", ctrl.CommentController.Create)
 	baseRoute.DELETE("/users/:id/comments/:thread_id", ctrl.CommentController.Delete)
+
+	// Reports (User, Thread, Comment)
+	baseRoute.PUT("/users/:id/reporting", ctrl.ReportController.Create)
 }
