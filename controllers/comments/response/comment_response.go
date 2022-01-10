@@ -1,27 +1,27 @@
-package responses
+package response
 
 import (
-	"disspace/business/threads"
+	"disspace/business/comments"
 	"time"
 )
 
-type ThreadResponse struct {
+type CommentResponse struct {
 	ID          string    `json:"_id"`
-	Title       string    `json:"title,omitempty"`
-	Content     string    `json:"content,omitempty"`
-	ImageUrl    string    `json:"image_url,omitempty"`
+	ThreadID    string    `json:"thread_id,omitempty"`
+	UserID      string    `json:"user_id,omitempty"`
+	Text        string    `json:"text,omitempty"`
 	NumVotes    int       `json:"num_votes,omitempty"`
 	NumComments int       `json:"num_comments,omitempty"`
 	CreatedAt   time.Time `json:"created_at,omitempty"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty"`
 }
 
-func FromDomain(domain threads.Domain) ThreadResponse {
-	return ThreadResponse{
+func FromDomain(domain comments.Domain) CommentResponse {
+	return CommentResponse{
 		ID:          domain.ID,
-		Title:       domain.Title,
-		Content:     domain.Content,
-		ImageUrl:    domain.ImageUrl,
+		ThreadID:    domain.ThreadID,
+		UserID:      domain.UserID,
+		Text:        domain.Text,
 		NumVotes:    domain.NumVotes,
 		NumComments: domain.NumComments,
 		CreatedAt:   domain.CreatedAt,
