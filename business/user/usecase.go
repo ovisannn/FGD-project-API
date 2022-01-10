@@ -24,3 +24,12 @@ func (useCase *UserUseCase) Register(ctx context.Context, data *UserDomain) (Use
 	}
 	return result, nil
 }
+
+func (UseCase *UserUseCase) UserProfileGetByUserID(ctx context.Context, id string) (UserProfileDomain, error) {
+	result, err := UseCase.userRepo.UserProfileGetByUserID(ctx, id)
+
+	if err != nil {
+		return UserProfileDomain{}, err
+	}
+	return result, nil
+}

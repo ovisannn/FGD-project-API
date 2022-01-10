@@ -19,20 +19,22 @@ type UserDomain struct {
 }
 
 type UserProfileDomain struct {
-	ID         string   `json:"_id,omitempty" bson:"_id,omitempty"`
-	UserId     string   `json:"user_id" bson:"user_id"`
+	ID          string   `json:"_id,omitempty" bson:"_id,omitempty"`
+	UserId      string   `json:"user_id" bson:"user_id"`
 	ProfilePict string   `json:"profile_pict" bson:"profile_pict"`
-	Bio        string   `json:"bio" bson:"bio"`
-	Following  []string `json:"following" bson:"following"`
-	Followers  []string `json:"followers" bson:"followers"`
-	Threads    []string `json:"threads" bson:"threads"`
-	Reputation int      `json:"reputation" bson:"reputation"`
+	Bio         string   `json:"bio" bson:"bio"`
+	Following   []string `json:"following" bson:"following"`
+	Followers   []string `json:"followers" bson:"followers"`
+	Threads     []string `json:"threads" bson:"threads"`
+	Reputation  int      `json:"reputation" bson:"reputation"`
 }
 
 type UseCase interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
+	UserProfileGetByUserID(ctx context.Context, id string) (UserProfileDomain, error)
 }
 
 type Repository interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
+	UserProfileGetByUserID(ctx context.Context, id string) (UserProfileDomain, error)
 }
