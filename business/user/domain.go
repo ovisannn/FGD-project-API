@@ -32,9 +32,13 @@ type UserProfileDomain struct {
 type UseCase interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
 	UserProfileGetByUserID(ctx context.Context, id string) (UserProfileDomain, error)
+	// GetUserByID(ctx context.Context, id string) (UserDomain, error)
+	Login(ctx context.Context, username string, password string) (UserDomain, error)
 }
 
 type Repository interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
 	UserProfileGetByUserID(ctx context.Context, id string) (UserProfileDomain, error)
+	GetUserByID(ctx context.Context, id string) (UserDomain, error)
+	// Login(ctx context.Context, username string, password string) (UserDomain, error)
 }

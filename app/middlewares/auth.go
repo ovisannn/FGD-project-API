@@ -16,14 +16,14 @@ type JwtClaims struct {
 }
 
 type ConfigJwt struct {
-	SecretJWT       string
-	ExpiresDuration int
+	Secret    string
+	ExpiresAt int64
 }
 
 func (config *ConfigJwt) Init() middleware.JWTConfig {
 	return middleware.JWTConfig{
 		Claims:     &JwtClaims{},
-		SigningKey: []byte(config.SecretJWT),
+		SigningKey: []byte(config.Secret),
 		ErrorHandlerWithContext: middleware.JWTErrorHandlerWithContext(func(e error, c echo.Context) error {
 			return controllers.NewErrorResponse(c, http.StatusForbidden, e)
 		}),
@@ -34,12 +34,12 @@ func (jwtConf *ConfigJwt) GenerateToken(UserID uint) (string, error) {
 	claims := JwtClaims{
 		UserID,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(int64(jwtConf.ExpiresDuration))).Unix(),
+			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(int64(jwtConf.ExpiresAt))).Unix(),
 		},
 	}
 
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, err := t.SignedString([]byte(jwtConf.SecretJWT))
+	token, err := t.SignedString([]byte(jwtConf.Secret))
 
 	return token, err
 }

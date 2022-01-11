@@ -24,6 +24,7 @@ type ControllerList struct {
 
 func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute := e.Group("/v1")
+	// jwtAuth := middleware.JWTWithConfig(cl.JwtConfig)
 
 	// Threads
 	baseRoute.GET("/threads", ctrl.ThreadController.GetAll)

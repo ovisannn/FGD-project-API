@@ -2,16 +2,19 @@ package user
 
 import (
 	"context"
+	"disspace/app/middlewares"
 	"time"
 )
 
 type UserUseCase struct {
+	ConfigJwt      middlewares.ConfigJwt
 	userRepo       Repository
 	contextTimeout time.Duration
 }
 
-func NewUserUseCase(UserRepository Repository, timeout time.Duration) UseCase {
+func NewUserUseCase(UserRepository Repository, timeout time.Duration, ConfigJWT middlewares.ConfigJwt) UseCase {
 	return &UserUseCase{
+		ConfigJwt:      ConfigJWT,
 		userRepo:       UserRepository,
 		contextTimeout: timeout,
 	}
@@ -32,4 +35,8 @@ func (UseCase *UserUseCase) UserProfileGetByUserID(ctx context.Context, id strin
 		return UserProfileDomain{}, err
 	}
 	return result, nil
+}
+
+func (UseCase *UserUseCase) Login(ctx context.Context, username string, password string) (UserDomain, error) {
+	return UserDomain{}, nil
 }

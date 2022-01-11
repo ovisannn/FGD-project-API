@@ -21,7 +21,6 @@ func NewMongoDBUserRepository(conn *mongo.Database) user.Repository {
 }
 
 func (repository *MongoDBUserRepository) Register(ctx context.Context, data *user.UserDomain) (user.UserDomain, error) {
-	// gs://disspace-250a1.appspot.com/profile_pict/profile_default.jpg
 	newUser := UserFromDomain(*data)
 	checkVar := []User{}
 	filter := bson.D{{Key: "username", Value: newUser.Username}}
@@ -66,4 +65,18 @@ func (repository *MongoDBUserRepository) UserProfileGetByUserID(ctx context.Cont
 		panic(err)
 	}
 	return result.UserProfileToDomain(), nil
+}
+
+func (repository *MongoDBUserRepository) GetUserByID(ctx context.Context, id string) (user.UserDomain, error) {
+	result := User{}
+	convert, errorConvert := primitive.ObjectIDFromHex(id)
+	if errorConvert != nil {
+		return user.UserDomain{}, errorConvert
+	}
+	filter := bson.D{{Key: "_id", Value: convert}}
+	err := repository.Conn.Collection("users").FindOne(ctx, filter).Decode(result)
+	if err != nil {
+		panic(err)
+	}
+	return result.UserToDomain(), nil
 }
