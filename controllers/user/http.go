@@ -42,3 +42,15 @@ func (controller *UserController) UserProfileGetByUserID(c echo.Context) error {
 	}
 	return controllers.NewSuccessResponse(c, responses.UserProfileFromDomain(result))
 }
+
+func (controller *UserController) Login(c echo.Context) error {
+	loginInfo := requests.LoginInfo{}
+	c.Bind(&loginInfo)
+
+	ctx := c.Request().Context()
+	result, err := controller.UserUseCase.Login(ctx, loginInfo.Username, loginInfo.Password)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	return controllers.NewSuccessResponse(c, responses.SessionFromDomain(result))
+}

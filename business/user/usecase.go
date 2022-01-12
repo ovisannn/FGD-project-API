@@ -37,6 +37,27 @@ func (UseCase *UserUseCase) UserProfileGetByUserID(ctx context.Context, id strin
 	return result, nil
 }
 
-func (UseCase *UserUseCase) Login(ctx context.Context, username string, password string) (UserDomain, error) {
-	return UserDomain{}, nil
+func (UseCase *UserUseCase) Login(ctx context.Context, username string, password string) (UserSessionDomain, error) {
+	result, err := UseCase.userRepo.Login(ctx, username, password)
+	if err != nil {
+		return UserSessionDomain{}, err
+	}
+	// idconv, errConv := strconv.ParseUint(result.ID, 16, 64)
+	// if errConv != nil {
+	// 	panic(errConv)
+	// }
+	userToken, errToken := UseCase.ConfigJwt.GenerateToken(result.ID)
+	if errToken != nil {
+		return UserSessionDomain{}, err
+	}
+	newSession := UserSessionDomain{
+		Token:    userToken,
+		Username: result.Username,
+	}
+	errSession := UseCase.userRepo.InsertSession(ctx, newSession)
+	if errSession != nil {
+		return UserSessionDomain{}, err
+	}
+	// insert new session
+	return newSession, nil
 }

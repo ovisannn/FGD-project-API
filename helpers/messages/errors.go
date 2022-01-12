@@ -12,4 +12,5 @@ var (
 	ErrDataNotFound         = errors.New("data not found")
 	ErrDuplicatedData       = errors.New("duplicated data")
 	ErrUsernameAlreadyExist = errors.New("username already exist")
+	ErrInvalidCredentials   = errors.New("invalid credentials")
 )

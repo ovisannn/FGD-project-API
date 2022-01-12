@@ -11,7 +11,7 @@ import (
 )
 
 type JwtClaims struct {
-	UserID uint
+	UserID string
 	jwt.StandardClaims
 }
 
@@ -30,7 +30,7 @@ func (config *ConfigJwt) Init() middleware.JWTConfig {
 	}
 }
 
-func (jwtConf *ConfigJwt) GenerateToken(UserID uint) (string, error) {
+func (jwtConf *ConfigJwt) GenerateToken(UserID string) (string, error) {
 	claims := JwtClaims{
 		UserID,
 		jwt.StandardClaims{

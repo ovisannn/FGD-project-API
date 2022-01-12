@@ -47,6 +47,7 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	//user
 	baseRoute.POST("/user/register", ctrl.UserController.Register)
 	baseRoute.GET("/userProfile/:id", ctrl.UserController.UserProfileGetByUserID)
+	baseRoute.POST("/user/login", ctrl.UserController.Login)
 
 	// Comments
 	baseRoute.POST("/users/:id/comments", ctrl.CommentController.Create)

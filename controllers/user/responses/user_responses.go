@@ -54,3 +54,15 @@ func UserProfileFromDomain(domain user.UserProfileDomain) UserProfile {
 		Reputation:  domain.Reputation,
 	}
 }
+
+type UserSession struct {
+	Token    string `json:"token" bson:"token"`
+	Username string `json:"username" bson:"username"`
+}
+
+func SessionFromDomain(domain user.UserSessionDomain) UserSession {
+	return UserSession{
+		Token:    domain.Token,
+		Username: domain.Username,
+	}
+}

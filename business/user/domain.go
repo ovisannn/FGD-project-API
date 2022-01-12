@@ -29,16 +29,27 @@ type UserProfileDomain struct {
 	Reputation  int      `json:"reputation" bson:"reputation"`
 }
 
+type UserSessionDomain struct {
+	Token    string `json:"token" bson:"token"`
+	Username string `json:"username" bson:"username"`
+}
+
+type LoginInfoDomain struct {
+	Username string `json:"username" bson:"username"`
+	Password string `json:"password" bson:"password"`
+}
+
 type UseCase interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
 	UserProfileGetByUserID(ctx context.Context, id string) (UserProfileDomain, error)
 	// GetUserByID(ctx context.Context, id string) (UserDomain, error)
-	Login(ctx context.Context, username string, password string) (UserDomain, error)
+	Login(ctx context.Context, username string, password string) (UserSessionDomain, error)
 }
 
 type Repository interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
 	UserProfileGetByUserID(ctx context.Context, id string) (UserProfileDomain, error)
 	GetUserByID(ctx context.Context, id string) (UserDomain, error)
-	// Login(ctx context.Context, username string, password string) (UserDomain, error)
+	Login(ctx context.Context, username string, password string) (UserDomain, error)
+	InsertSession(ctx context.Context, dataSession UserSessionDomain) error
 }

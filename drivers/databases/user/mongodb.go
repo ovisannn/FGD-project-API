@@ -80,3 +80,26 @@ func (repository *MongoDBUserRepository) GetUserByID(ctx context.Context, id str
 	}
 	return result.UserToDomain(), nil
 }
+
+func (repository *MongoDBUserRepository) Login(ctx context.Context, username string, password string) (user.UserDomain, error) {
+	result := User{}
+	filter := bson.D{{Key: "username", Value: username}}
+	err := repository.Conn.Collection("users").FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return user.UserDomain{}, err
+	}
+	if password != result.Password {
+		return user.UserDomain{}, messages.ErrInvalidCredentials
+	}
+	return result.UserToDomain(), nil
+}
+
+func (repository *MongoDBUserRepository) InsertSession(ctx context.Context, dataSession user.UserSessionDomain) error {
+	newSession := SessionFromDomain(dataSession)
+	_, err := repository.Conn.Collection("session").InsertOne(ctx, newSession)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
