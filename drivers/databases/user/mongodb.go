@@ -74,10 +74,11 @@ func (repository *MongoDBUserRepository) GetUserByID(ctx context.Context, id str
 		return user.UserDomain{}, errorConvert
 	}
 	filter := bson.D{{Key: "_id", Value: convert}}
-	err := repository.Conn.Collection("users").FindOne(ctx, filter).Decode(result)
+	err := repository.Conn.Collection("users").FindOne(ctx, filter).Decode(&result)
 	if err != nil {
-		panic(err)
+		return user.UserDomain{}, messages.ErrDataNotFound
 	}
+	// fmt.Println(result)
 	return result.UserToDomain(), nil
 }
 
@@ -102,4 +103,17 @@ func (repository *MongoDBUserRepository) InsertSession(ctx context.Context, data
 	}
 
 	return nil
+}
+
+func (repository *MongoDBUserRepository) ConfirmAuthorization(ctx context.Context, session user.UserSessionDomain) (user.UserSessionDomain, error) {
+	checkSession := SessionFromDomain(session)
+	result := UserSession{}
+	filter := bson.D{{Key: "token", Value: checkSession.Token}}
+	err := repository.Conn.Collection("session").FindOne(ctx, filter).Decode(&result)
+
+	if err != nil {
+		return user.UserSessionDomain{}, messages.ErrSessionNotFound
+	}
+
+	return result.SessionToDomain(), nil
 }

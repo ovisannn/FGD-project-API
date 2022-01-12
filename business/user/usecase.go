@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"disspace/app/middlewares"
+	"disspace/helpers/messages"
 	"time"
 )
 
@@ -42,10 +43,7 @@ func (UseCase *UserUseCase) Login(ctx context.Context, username string, password
 	if err != nil {
 		return UserSessionDomain{}, err
 	}
-	// idconv, errConv := strconv.ParseUint(result.ID, 16, 64)
-	// if errConv != nil {
-	// 	panic(errConv)
-	// }
+
 	userToken, errToken := UseCase.ConfigJwt.GenerateToken(result.ID)
 	if errToken != nil {
 		return UserSessionDomain{}, err
@@ -60,4 +58,21 @@ func (UseCase *UserUseCase) Login(ctx context.Context, username string, password
 	}
 	// insert new session
 	return newSession, nil
+}
+
+func (UseCase *UserUseCase) GetUserByID(ctx context.Context, id string, dataSession UserSessionDomain) (UserDomain, error) {
+	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
+	if err != nil {
+		return UserDomain{}, err
+	}
+	// fmt.Println("id : " + id)
+	getUser, err := UseCase.userRepo.GetUserByID(ctx, id)
+	if err != nil {
+		return UserDomain{}, err
+	}
+	if getUser.Username != getAuthorization.Username {
+		return UserDomain{}, messages.ErrInvalidSession
+	}
+
+	return getUser, nil
 }

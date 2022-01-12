@@ -48,6 +48,17 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.POST("/user/register", ctrl.UserController.Register)
 	baseRoute.GET("/userProfile/:id", ctrl.UserController.UserProfileGetByUserID)
 	baseRoute.POST("/user/login", ctrl.UserController.Login)
+	baseRoute.GET("/user/:id", ctrl.UserController.GetUserByID)
+	//user follow user -> patch
+	//user unfollow -> patch
+	//user update profile -> patch
+	//user update user info -> patch
+
+	//leaderboard
+	//get leaderboard -> GET
+
+	//moderators
+	//get moderators -> GET
 
 	// Comments
 	baseRoute.POST("/users/:id/comments", ctrl.CommentController.Create)

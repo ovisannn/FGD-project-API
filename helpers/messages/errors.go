@@ -13,4 +13,6 @@ var (
 	ErrDuplicatedData       = errors.New("duplicated data")
 	ErrUsernameAlreadyExist = errors.New("username already exist")
 	ErrInvalidCredentials   = errors.New("invalid credentials")
+	ErrSessionNotFound      = errors.New("session not found")
+	ErrInvalidSession       = errors.New("invalid session")
 )

@@ -42,8 +42,8 @@ type LoginInfoDomain struct {
 type UseCase interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
 	UserProfileGetByUserID(ctx context.Context, id string) (UserProfileDomain, error)
-	// GetUserByID(ctx context.Context, id string) (UserDomain, error)
-	Login(ctx context.Context, username string, password string) (UserSessionDomain, error)
+	GetUserByID(ctx context.Context, id string, dataSession UserSessionDomain) (UserDomain, error)
+	Login(ctx context.Context, username string, password string) (UserSessionDomain, error) //already loged in feature
 }
 
 type Repository interface {
@@ -52,4 +52,5 @@ type Repository interface {
 	GetUserByID(ctx context.Context, id string) (UserDomain, error)
 	Login(ctx context.Context, username string, password string) (UserDomain, error)
 	InsertSession(ctx context.Context, dataSession UserSessionDomain) error
+	ConfirmAuthorization(ctx context.Context, session UserSessionDomain) (UserSessionDomain, error)
 }
