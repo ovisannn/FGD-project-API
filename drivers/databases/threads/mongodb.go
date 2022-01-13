@@ -3,7 +3,7 @@ package threads
 import (
 	"context"
 	"disspace/business/threads"
-	
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -33,12 +33,16 @@ var commentLookup = bson.M{
 	"as":           "comments",
 }
 
-func (repository *MongoDBThreadRepository) GetAll(ctx context.Context) ([]threads.Domain, error) {
+func (repository *MongoDBThreadRepository) GetAll(ctx context.Context, sort string) ([]threads.Domain, error) {
 	var result []threads.Domain
 
 	countVotes := bson.M{"num_votes": bson.M{"$sum": "$votes.status"}}
 	countComments := bson.M{"num_comments": bson.M{"$size": "$comments"}}
 	convIdToString := bson.M{"thread_id": bson.M{"$toString": "$_id"}}
+	if sort == "" {
+		sort = "created_at"
+	}
+	sorting := bson.M{sort: -1}
 
 	query := []bson.M{
 		{
@@ -55,6 +59,9 @@ func (repository *MongoDBThreadRepository) GetAll(ctx context.Context) ([]thread
 		},
 		{
 			"$addFields": countComments,
+		},
+		{
+			"$sort": sorting,
 		},
 	}
 
@@ -104,8 +111,6 @@ func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id strin
 
 	filter := bson.D{{Key: "_id", Value: convert}}
 
-
-
 	countVotes := bson.M{"num_votes": bson.M{"$sum": "$votes.status"}}
 	countComments := bson.M{"num_comments": bson.M{"$size": "$comments"}}
 	convIdToString := bson.M{"thread_id": bson.M{"$toString": "$_id"}}
@@ -139,14 +144,14 @@ func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id strin
 	if err = cursor.All(ctx, &result); err != nil {
 		return threads.Domain{}, err
 	}
-	
+
 	var res = result[0]
 
 	return res.ToDomain(), nil
 }
 
 func (repository *MongoDBThreadRepository) Update(ctx context.Context, threadDomain *threads.Domain, id string) error {
-	thread := FromDomain(*threadDomain)
+	thread := FromDomainUpdate(*threadDomain)
 
 	convert, errorConvert := primitive.ObjectIDFromHex(id)
 	if errorConvert != nil {
