@@ -20,7 +20,7 @@ type UserDomain struct {
 
 type UserProfileDomain struct {
 	ID          string   `json:"_id,omitempty" bson:"_id,omitempty"`
-	UserId      string   `json:"user_id" bson:"user_id"`
+	Username    string   `json:"username" bson:"username"`
 	ProfilePict string   `json:"profile_pict" bson:"profile_pict"`
 	Bio         string   `json:"bio" bson:"bio"`
 	Following   []string `json:"following" bson:"following"`
@@ -41,14 +41,14 @@ type LoginInfoDomain struct {
 
 type UseCase interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
-	UserProfileGetByUserID(ctx context.Context, id string) (UserProfileDomain, error)
+	UserProfileGetByUsername(ctx context.Context, username string) (UserProfileDomain, error)
 	GetUserByID(ctx context.Context, id string, dataSession UserSessionDomain) (UserDomain, error)
 	Login(ctx context.Context, username string, password string) (UserSessionDomain, error) //already loged in feature
 }
 
 type Repository interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
-	UserProfileGetByUserID(ctx context.Context, id string) (UserProfileDomain, error)
+	UserProfileGetByUsername(ctx context.Context, username string) (UserProfileDomain, error)
 	GetUserByID(ctx context.Context, id string) (UserDomain, error)
 	Login(ctx context.Context, username string, password string) (UserDomain, error)
 	InsertSession(ctx context.Context, dataSession UserSessionDomain) error

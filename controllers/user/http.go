@@ -32,11 +32,11 @@ func (controller *UserController) Register(c echo.Context) error {
 	return controllers.NewSuccessResponse(c, responses.UserFromDomain(result))
 }
 
-func (controller *UserController) UserProfileGetByUserID(c echo.Context) error {
+func (controller *UserController) UserProfileGetByUsername(c echo.Context) error {
 	ctx := c.Request().Context()
-	id := c.Param("id")
+	username := c.Param("username")
 
-	result, err := controller.UserUseCase.UserProfileGetByUserID(ctx, id)
+	result, err := controller.UserUseCase.UserProfileGetByUsername(ctx, username)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}

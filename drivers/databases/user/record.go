@@ -20,7 +20,7 @@ type User struct {
 
 type UserProfile struct {
 	ID          string   `json:"_id,omitempty" bson:"_id,omitempty"`
-	UserId      string   `json:"user_id" bson:"user_id"`
+	Username    string   `json:"username" bson:"username"`
 	ProfilePict string   `json:"profile_pict" bson:"profile_pict"`
 	Bio         string   `json:"bio" bson:"bio"`
 	Following   []string `json:"following" bson:"following"`
@@ -66,7 +66,7 @@ func (record *User) UserToDomain() user.UserDomain {
 func (record *UserProfile) UserProfileToDomain() user.UserProfileDomain {
 	return user.UserProfileDomain{
 		ID:          record.ID,
-		UserId:      record.UserId,
+		Username:    record.Username,
 		ProfilePict: record.ProfilePict,
 		Bio:         record.Bio,
 		Following:   record.Following,
@@ -94,7 +94,7 @@ func UserFromDomain(domain user.UserDomain) User {
 func UserProfileFromDomain(domain user.UserProfileDomain) UserProfile {
 	return UserProfile{
 		ID:          domain.ID,
-		UserId:      domain.UserId,
+		Username:    domain.Username,
 		ProfilePict: domain.ProfilePict,
 		Bio:         domain.Bio,
 		Following:   domain.Following,

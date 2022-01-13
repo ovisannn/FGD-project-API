@@ -46,7 +46,7 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 
 	//user
 	baseRoute.POST("/user/register", ctrl.UserController.Register)
-	baseRoute.GET("/userProfile/:id", ctrl.UserController.UserProfileGetByUserID)
+	baseRoute.GET("/userProfile/:username", ctrl.UserController.UserProfileGetByUsername)
 	baseRoute.POST("/user/login", ctrl.UserController.Login)
 	baseRoute.GET("/user/:id", ctrl.UserController.GetUserByID)
 	//user follow user -> patch

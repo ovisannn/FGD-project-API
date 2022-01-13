@@ -35,10 +35,10 @@ func (repository *MongoDBUserRepository) Register(ctx context.Context, data *use
 		return user.UserDomain{}, messages.ErrUsernameAlreadyExist
 	}
 
-	cursor, err := repository.Conn.Collection("users").InsertOne(ctx, newUser)
-	userID := cursor.InsertedID.(primitive.ObjectID).Hex()
+	_, err := repository.Conn.Collection("users").InsertOne(ctx, newUser)
+	// userID := cursor.InsertedID.(primitive.ObjectID).Hex()
 	newProfileUser := UserProfile{
-		UserId:      userID,
+		Username:    newUser.Username,
 		ProfilePict: "gs://disspace-250a1.appspot.com/profile_pict/profile_default.jpg",
 		Bio:         " ",
 		Following:   []string{},
@@ -57,13 +57,15 @@ func (repository *MongoDBUserRepository) Register(ctx context.Context, data *use
 
 }
 
-func (repository *MongoDBUserRepository) UserProfileGetByUserID(ctx context.Context, id string) (user.UserProfileDomain, error) {
+func (repository *MongoDBUserRepository) UserProfileGetByUsername(ctx context.Context, username string) (user.UserProfileDomain, error) {
 	result := UserProfile{}
-	filter := bson.D{{Key: "user_id", Value: id}}
+	filter := bson.D{{Key: "username", Value: username}}
 	err := repository.Conn.Collection("user_profile").FindOne(ctx, filter).Decode(&result)
 	if err != nil {
-		panic(err)
+		return user.UserProfileDomain{}, err
 	}
+	// fmt.Println(username)
+
 	return result.UserProfileToDomain(), nil
 }
 
