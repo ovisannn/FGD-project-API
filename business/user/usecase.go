@@ -39,6 +39,10 @@ func (UseCase *UserUseCase) UserProfileGetByUsername(ctx context.Context, userna
 }
 
 func (UseCase *UserUseCase) Login(ctx context.Context, username string, password string) (UserSessionDomain, error) {
+	loggedInCheck := UseCase.userRepo.CheckingSession(ctx, username)
+	if loggedInCheck != nil {
+		return UserSessionDomain{}, loggedInCheck
+	}
 	result, err := UseCase.userRepo.Login(ctx, username, password)
 	if err != nil {
 		return UserSessionDomain{}, err

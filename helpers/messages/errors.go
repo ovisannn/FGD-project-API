@@ -15,4 +15,5 @@ var (
 	ErrInvalidCredentials   = errors.New("invalid credentials")
 	ErrSessionNotFound      = errors.New("session not found")
 	ErrInvalidSession       = errors.New("invalid session")
+	ErrAlreadyLoggedIn      = errors.New("already logged in")
 )

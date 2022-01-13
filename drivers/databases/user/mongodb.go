@@ -119,3 +119,15 @@ func (repository *MongoDBUserRepository) ConfirmAuthorization(ctx context.Contex
 
 	return result.SessionToDomain(), nil
 }
+
+func (repository *MongoDBUserRepository) CheckingSession(ctx context.Context, username string) error {
+	result := UserSession{}
+	filter := bson.D{{Key: "username", Value: username}}
+	repository.Conn.Collection("session").FindOne(ctx, filter).Decode(&result)
+
+	if result.Username == username {
+		return messages.ErrAlreadyLoggedIn
+	}
+
+	return nil
+}

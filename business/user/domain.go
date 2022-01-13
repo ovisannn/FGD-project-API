@@ -51,6 +51,7 @@ type Repository interface {
 	UserProfileGetByUsername(ctx context.Context, username string) (UserProfileDomain, error)
 	GetUserByID(ctx context.Context, id string) (UserDomain, error)
 	Login(ctx context.Context, username string, password string) (UserDomain, error)
+	CheckingSession(ctx context.Context, username string) error
 	InsertSession(ctx context.Context, dataSession UserSessionDomain) error
 	ConfirmAuthorization(ctx context.Context, session UserSessionDomain) (UserSessionDomain, error)
 }
