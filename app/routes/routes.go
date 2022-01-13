@@ -45,14 +45,15 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.PUT("/users/:id/votes/:ref_id", ctrl.VoteController.Update)
 
 	//user
-	baseRoute.POST("/user/register", ctrl.UserController.Register)
+	baseRoute.POST("/user/register", ctrl.UserController.Register) // belum encrypt password
 	baseRoute.GET("/userProfile/:username", ctrl.UserController.UserProfileGetByUsername)
-	baseRoute.POST("/user/login", ctrl.UserController.Login)
+	baseRoute.POST("/user/login", ctrl.UserController.Login) // belum decrypt password
 	baseRoute.GET("/user/:id", ctrl.UserController.GetUserByID)
-	//user follow user -> patch
-	//user unfollow -> patch
-	//user update profile -> patch
-	//user update user info -> patch
+	baseRoute.PATCH("user/follow/:username/:usernameTarget", ctrl.UserController.Follow)
+	// baseRoute.PATCH("user/unfollow/:username/:usernameTarget")
+	// baseRoute.PATCH("userProfile/:username")
+	// baseRoute.PATCH("user/:username")
+	// baseRoute.DELETE("user/logout/:username")
 
 	//leaderboard
 	//get leaderboard -> GET

@@ -43,14 +43,18 @@ type UseCase interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
 	UserProfileGetByUsername(ctx context.Context, username string) (UserProfileDomain, error)
 	GetUserByID(ctx context.Context, id string, dataSession UserSessionDomain) (UserDomain, error)
-	Login(ctx context.Context, username string, password string) (UserSessionDomain, error) //already loged in feature
+	Login(ctx context.Context, username string, password string) (UserSessionDomain, error)
+	Follow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error
 }
 
 type Repository interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
 	UserProfileGetByUsername(ctx context.Context, username string) (UserProfileDomain, error)
 	GetUserByID(ctx context.Context, id string) (UserDomain, error)
+	GetUserByUsername(ctx context.Context, username string) (UserDomain, error)
 	Login(ctx context.Context, username string, password string) (UserDomain, error)
+	UpdateUserProfile(ctx context.Context, username string, data UserProfileDomain) error
+
 	CheckingSession(ctx context.Context, username string) error
 	InsertSession(ctx context.Context, dataSession UserSessionDomain) error
 	ConfirmAuthorization(ctx context.Context, session UserSessionDomain) (UserSessionDomain, error)

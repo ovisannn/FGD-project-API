@@ -69,7 +69,6 @@ func (UseCase *UserUseCase) GetUserByID(ctx context.Context, id string, dataSess
 	if err != nil {
 		return UserDomain{}, err
 	}
-	// fmt.Println("id : " + id)
 	getUser, err := UseCase.userRepo.GetUserByID(ctx, id)
 	if err != nil {
 		return UserDomain{}, err
@@ -79,4 +78,33 @@ func (UseCase *UserUseCase) GetUserByID(ctx context.Context, id string, dataSess
 	}
 
 	return getUser, nil
+}
+
+func (UseCase *UserUseCase) Follow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error {
+	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
+	if err != nil {
+		return err
+	}
+	getUser, err := UseCase.userRepo.GetUserByUsername(ctx, username)
+	if err != nil {
+		return err
+	}
+	if getUser.Username != getAuthorization.Username {
+		return messages.ErrInvalidSession
+	}
+
+	getUserProfile, err := UseCase.userRepo.UserProfileGetByUsername(ctx, username)
+	if err != nil {
+		return err
+	}
+	existingFollowers := getUserProfile.Followers
+	existingFollowers = append(existingFollowers, targetUsername)
+	updateData := UserProfileDomain{
+		Followers: existingFollowers,
+	}
+	errUpdate := UseCase.userRepo.UpdateUserProfile(ctx, username, updateData)
+	if errUpdate != nil {
+		return err
+	}
+	return nil
 }

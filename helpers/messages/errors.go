@@ -16,4 +16,5 @@ var (
 	ErrSessionNotFound      = errors.New("session not found")
 	ErrInvalidSession       = errors.New("invalid session")
 	ErrAlreadyLoggedIn      = errors.New("already logged in")
+	ErrUpdateFailed         = errors.New("update failed")
 )

@@ -68,3 +68,17 @@ func (controller *UserController) GetUserByID(c echo.Context) error {
 	}
 	return controllers.NewSuccessResponse(c, responses.UserFromDomain(result))
 }
+
+func (controller *UserController) Follow(c echo.Context) error {
+	ctx := c.Request().Context()
+	dataSession := requests.UserSession{}
+	username := c.Param("username")
+	usernameTarget := c.Param("usernameTarget")
+	c.Bind(&dataSession)
+
+	err := controller.UserUseCase.Follow(ctx, username, usernameTarget, dataSession.SessionToDomain())
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	return controllers.NewSuccessResponse(c, nil)
+}
