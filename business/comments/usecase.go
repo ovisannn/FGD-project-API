@@ -36,3 +36,11 @@ func (useCase *CommentUseCase) Delete(ctx context.Context, id string, threadId s
 	}
 	return nil
 }
+
+func (useCase *CommentUseCase) Search(ctx context.Context, q string, sort string) ([]Domain, error) {
+	result, err := useCase.commentRepo.Search(ctx, q, sort)
+	if err != nil {
+		return []Domain{}, err
+	}
+	return result, nil
+}

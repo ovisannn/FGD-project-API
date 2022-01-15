@@ -87,3 +87,19 @@ func (controller *ThreadController) Update(c echo.Context) error {
 	}
 	return controllers.NewSuccessResponse(c, "successfully update thread")
 }
+
+func (controller *ThreadController) Search(c echo.Context) error {
+	threads := []responses.ThreadResponse{}
+	query := c.QueryParam("q")
+	sorting := c.QueryParam("sort")
+	ctx := c.Request().Context()
+
+	result, err := controller.ThreadUseCase.Search(ctx, query, sorting)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusNotFound, err)
+	}
+	for _, item := range result {
+		threads = append(threads, responses.FromDomain(item))
+	}
+	return controllers.NewSuccessResponse(c, threads)
+}

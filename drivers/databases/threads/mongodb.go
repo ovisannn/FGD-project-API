@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoDBThreadRepository struct {
@@ -67,7 +68,7 @@ func (repository *MongoDBThreadRepository) GetAll(ctx context.Context, sort stri
 
 	cursor, err := repository.Conn.Collection("threads").Aggregate(ctx, query)
 	if err != nil {
-		panic(err)
+		return []threads.Domain{}, err
 	}
 
 	if err = cursor.All(ctx, &result); err != nil {
@@ -164,4 +165,32 @@ func (repository *MongoDBThreadRepository) Update(ctx context.Context, threadDom
 		return err
 	}
 	return nil
+}
+
+func (repository *MongoDBThreadRepository) Search(ctx context.Context, q string, sort string) ([]threads.Domain, error) {
+	var result []threads.Domain
+	if sort == "" {
+		sort = "created_at"
+	}
+	sorting := bson.M{sort: -1}
+	opts := options.Find().SetSort(sorting)
+
+	// Create index for threads collection
+	model := mongo.IndexModel{Keys: bson.D{{Key: "title", Value: "text"}}}
+	_, errIndex := repository.Conn.Collection("threads").Indexes().CreateOne(ctx, model)
+	if errIndex != nil {
+		return []threads.Domain{}, errIndex
+	}
+
+	// Search
+	filter := bson.D{{Key: "$text", Value: bson.D{{Key: "$search", Value: q}}}}
+	cursor, err := repository.Conn.Collection("threads").Find(ctx, filter, opts)
+	if err != nil {
+		return []threads.Domain{}, err
+	}
+
+	if err = cursor.All(ctx, &result); err != nil {
+		return []threads.Domain{}, err
+	}
+	return result, nil
 }

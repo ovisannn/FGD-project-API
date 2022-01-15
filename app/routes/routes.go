@@ -17,7 +17,7 @@ type ControllerList struct {
 	ThreadController     threads.ThreadController
 	CategoriesController categories.CategoriesController
 	VoteController       votes.VoteController
-	UserController user.UserController
+	UserController       user.UserController
 	CommentController    comments.CommentController
 	ReportController     reports.ReportController
 }
@@ -45,11 +45,15 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 
 	//user
 	baseRoute.POST("/user/register", ctrl.UserController.Register)
-  
+
 	// Comments
 	baseRoute.POST("/users/:id/comments", ctrl.CommentController.Create)
 	baseRoute.DELETE("/users/:id/comments/:thread_id", ctrl.CommentController.Delete)
 
 	// Reports (User, Thread, Comment)
 	baseRoute.PUT("/users/:id/reporting", ctrl.ReportController.Create)
+
+	// Search (Users, Threads, Comments)
+	baseRoute.GET("/threads/search", ctrl.ThreadController.Search)
+	baseRoute.GET("/comments/search", ctrl.CommentController.Search)
 }

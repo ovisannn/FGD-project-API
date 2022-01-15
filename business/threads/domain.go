@@ -24,6 +24,7 @@ type UseCase interface {
 	Delete(ctx context.Context, id string) error
 	GetByID(ctx context.Context, id string) (Domain, error)
 	Update(ctx context.Context, data *Domain, id string) error
+	Search(ctx context.Context, q string, sort string) ([]Domain, error)
 }
 
 type Repository interface {
@@ -32,4 +33,5 @@ type Repository interface {
 	Delete(ctx context.Context, id string) error
 	GetByID(ctx context.Context, id string) (Domain, error)
 	Update(ctx context.Context, data *Domain, id string) error
+	Search(ctx context.Context, q string, sort string) ([]Domain, error)
 }

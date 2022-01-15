@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoDBCommentRepository struct {
@@ -76,4 +77,33 @@ func (repository *MongoDBCommentRepository) Delete(ctx context.Context, id strin
 		return messages.ErrDataNotFound
 	}
 	return nil
+}
+
+func (repository *MongoDBCommentRepository) Search(ctx context.Context, q string, sort string) ([]comments.Domain, error) {
+	var result []comments.Domain
+	if sort == "" {
+		sort = "created_at"
+	}
+	sorting := bson.M{sort: -1}
+	opts := options.Find().SetSort(sorting)
+
+	// Create index for comments collection
+	model := mongo.IndexModel{Keys: bson.D{{Key: "text", Value: "text"}}}
+	_, errIndex := repository.Conn.Collection("comments").Indexes().CreateOne(ctx, model)
+	if errIndex != nil {
+		return []comments.Domain{}, errIndex
+	}
+
+	// Search
+	filter := bson.D{{Key: "$text", Value: bson.D{{Key: "$search", Value: q}}}}
+
+	cursor, err := repository.Conn.Collection("comments").Find(ctx, filter, opts)
+	if err != nil {
+		return []comments.Domain{}, err
+	}
+
+	if err = cursor.All(ctx, &result); err != nil {
+		return []comments.Domain{}, err
+	}
+	return result, nil
 }

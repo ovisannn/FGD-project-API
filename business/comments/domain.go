@@ -19,9 +19,11 @@ type Domain struct {
 type UseCase interface {
 	Create(ctx context.Context, data *Domain, id string) (Domain, error)
 	Delete(ctx context.Context, id string, threadId string) error
+	Search(ctx context.Context, q string, sort string) ([]Domain, error)
 }
 
 type Repository interface {
 	Create(ctx context.Context, data *Domain, id string) (Domain, error)
 	Delete(ctx context.Context, id string, threadId string) error
+	Search(ctx context.Context, q string, sort string) ([]Domain, error)
 }

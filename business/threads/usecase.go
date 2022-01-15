@@ -34,7 +34,6 @@ func (useCase *ThreadUseCase) Create(ctx context.Context, threadDomain *Domain) 
 	return result, nil
 }
 
-
 func (useCase *ThreadUseCase) Delete(ctx context.Context, id string) error {
 	err := useCase.threadRepo.Delete(ctx, id)
 	if err != nil {
@@ -48,7 +47,7 @@ func (useCase *ThreadUseCase) GetByID(ctx context.Context, id string) (Domain, e
 	if err != nil {
 		return Domain{}, messages.ErrInvalidThreadID
 	}
-	return result, nil 
+	return result, nil
 }
 
 func (useCase *ThreadUseCase) Update(ctx context.Context, threadDomain *Domain, id string) error {
@@ -59,3 +58,10 @@ func (useCase *ThreadUseCase) Update(ctx context.Context, threadDomain *Domain, 
 	return nil
 }
 
+func (useCase *ThreadUseCase) Search(ctx context.Context, q string, sort string) ([]Domain, error) {
+	result, err := useCase.threadRepo.Search(ctx, q, sort)
+	if err != nil {
+		return []Domain{}, err
+	}
+	return result, nil
+}
