@@ -7,7 +7,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoDBThreadRepository struct {
@@ -169,22 +168,53 @@ func (repository *MongoDBThreadRepository) Update(ctx context.Context, threadDom
 
 func (repository *MongoDBThreadRepository) Search(ctx context.Context, q string, sort string) ([]threads.Domain, error) {
 	var result []threads.Domain
-	if sort == "" {
-		sort = "created_at"
-	}
-	sorting := bson.M{sort: -1}
-	opts := options.Find().SetSort(sorting)
 
 	// Create index for threads collection
-	model := mongo.IndexModel{Keys: bson.D{{Key: "title", Value: "text"},{Key: "content", Value: "text"}}}
+	model := mongo.IndexModel{Keys: bson.D{{Key: "title", Value: "text"}, {Key: "content", Value: "text"}}}
 	_, errIndex := repository.Conn.Collection("threads").Indexes().CreateOne(ctx, model)
 	if errIndex != nil {
 		return []threads.Domain{}, errIndex
 	}
 
 	// Search
-	filter := bson.D{{Key: "$text", Value: bson.D{{Key: "$search", Value: q}}}}
-	cursor, err := repository.Conn.Collection("threads").Find(ctx, filter, opts)
+	countVotes := bson.M{"num_votes": bson.M{"$sum": "$votes.status"}}
+	countComments := bson.M{"num_comments": bson.M{"$size": "$comments"}}
+	convIdToString := bson.M{"thread_id": bson.M{"$toString": "$_id"}}
+	if sort == "" {
+		sort = "created_at"
+	}
+	sorting := bson.M{sort: -1}
+
+	query := []bson.M{
+		{
+			"$addFields": convIdToString,
+		},
+		{
+			"$lookup": votesLookup,
+		},
+		{
+			"$lookup": commentLookup,
+		},
+		{
+			"$addFields": countVotes,
+		},
+		{
+			"$addFields": countComments,
+		},
+		{
+			"$sort": sorting,
+		},
+	}
+
+	if q != "" {
+		query = append(query, bson.M{})
+		copy(query[1:], query[0:])
+		query[0] = bson.M{
+			"$match": bson.M{"$text": bson.M{"$search": q}},
+		}
+	}
+
+	cursor, err := repository.Conn.Collection("threads").Aggregate(ctx, query)
 	if err != nil {
 		return []threads.Domain{}, err
 	}

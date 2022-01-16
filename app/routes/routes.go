@@ -52,6 +52,7 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 
 	// Reports (User, Thread, Comment)
 	baseRoute.PUT("/users/:id/reporting", ctrl.ReportController.Create)
+	baseRoute.GET("/reports", ctrl.ReportController.GetAll)
 
 	// Search (Users, Threads, Comments)
 	baseRoute.GET("/threads/search", ctrl.ThreadController.Search)

@@ -95,7 +95,10 @@ func (repository *MongoDBCommentRepository) Search(ctx context.Context, q string
 	}
 
 	// Search
-	filter := bson.D{{Key: "$text", Value: bson.D{{Key: "$search", Value: q}}}}
+	filter := bson.D{}
+	if q != "" {
+		filter = bson.D{{Key: "$text", Value: bson.D{{Key: "$search", Value: q}}}}
+	}
 
 	cursor, err := repository.Conn.Collection("comments").Find(ctx, filter, opts)
 	if err != nil {
