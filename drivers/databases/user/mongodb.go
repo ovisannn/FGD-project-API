@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"disspace/business/user"
+	"disspace/helpers/encryption"
 	"disspace/helpers/messages"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -35,15 +36,18 @@ func (repository *MongoDBUserRepository) Register(ctx context.Context, data *use
 		return user.UserDomain{}, messages.ErrUsernameAlreadyExist
 	}
 
+	encryptedPass := encryption.Encode(newUser.Password)
+	newUser.Password = encryptedPass
 	_, err := repository.Conn.Collection("users").InsertOne(ctx, newUser)
+
 	newProfileUser := UserProfile{
 		Username:    newUser.Username,
 		ProfilePict: "gs://disspace-250a1.appspot.com/profile_pict/profile_default.jpg",
 		Bio:         " ",
-		Following:   []string{},
-		Followers:   []string{},
-		Threads:     []string{},
-		Reputation:  0,
+		Following:   []string{"0"},
+		Followers:   []string{"0"},
+		Threads:     []string{"0"},
+		Reputation:  1,
 	}
 	_, errProfile := repository.Conn.Collection("user_profile").InsertOne(ctx, newProfileUser)
 	if err != nil {
@@ -90,7 +94,8 @@ func (repository *MongoDBUserRepository) Login(ctx context.Context, username str
 	if err != nil {
 		return user.UserDomain{}, err
 	}
-	if password != result.Password {
+	decodedPass := encryption.Decode(result.Password)
+	if password != decodedPass {
 		return user.UserDomain{}, messages.ErrInvalidCredentials
 	}
 	return result.UserToDomain(), nil
@@ -132,12 +137,12 @@ func (repository *MongoDBUserRepository) CheckingSession(ctx context.Context, us
 }
 
 func (repository *MongoDBUserRepository) UpdateUserProfile(ctx context.Context, username string, data user.UserProfileDomain) error {
-	userProfile := UserProfileFromDomain(*&data)
+	userProfile := UserProfileFromDomain(data)
 
 	update := bson.D{{Key: "$set", Value: userProfile}}
 	filter := bson.D{{Key: "username", Value: username}}
 	err := repository.Conn.Collection("user_profile").FindOneAndUpdate(ctx, filter, update)
-	if err != nil {
+	if err.Err() != nil {
 		return messages.ErrUpdateFailed
 	}
 	return nil

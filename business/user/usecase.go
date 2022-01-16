@@ -92,19 +92,40 @@ func (UseCase *UserUseCase) Follow(ctx context.Context, username string, targetU
 	if getUser.Username != getAuthorization.Username {
 		return messages.ErrInvalidSession
 	}
-
+	//update following
 	getUserProfile, err := UseCase.userRepo.UserProfileGetByUsername(ctx, username)
 	if err != nil {
 		return err
 	}
-	existingFollowers := getUserProfile.Followers
-	existingFollowers = append(existingFollowers, targetUsername)
+	for _, item := range getUserProfile.Following {
+		if targetUsername == item {
+			return messages.ErrUserAlreadyFollowed
+		}
+	}
+	existingFollowing := getUserProfile.Following
+	existingFollowing = append(existingFollowing, targetUsername)
 	updateData := UserProfileDomain{
-		Followers: existingFollowers,
+		Following: existingFollowing,
 	}
 	errUpdate := UseCase.userRepo.UpdateUserProfile(ctx, username, updateData)
 	if errUpdate != nil {
 		return err
 	}
+
+	//update followers
+	getTargetProfile, err := UseCase.userRepo.UserProfileGetByUsername(ctx, targetUsername)
+	if err != nil {
+		return err
+	}
+	existingFollowers := getTargetProfile.Followers
+	existingFollowers = append(existingFollowers, username)
+	updateDataTarget := UserProfileDomain{
+		Followers: existingFollowers,
+	}
+	errUpdateTarget := UseCase.userRepo.UpdateUserProfile(ctx, targetUsername, updateDataTarget)
+	if errUpdateTarget != nil {
+		return err
+	}
+
 	return nil
 }

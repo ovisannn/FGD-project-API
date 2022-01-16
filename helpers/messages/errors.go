@@ -17,4 +17,5 @@ var (
 	ErrInvalidSession       = errors.New("invalid session")
 	ErrAlreadyLoggedIn      = errors.New("already logged in")
 	ErrUpdateFailed         = errors.New("update failed")
+	ErrUserAlreadyFollowed  = errors.New("user already followed")
 )

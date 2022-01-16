@@ -72,13 +72,14 @@ func (controller *UserController) GetUserByID(c echo.Context) error {
 func (controller *UserController) Follow(c echo.Context) error {
 	ctx := c.Request().Context()
 	dataSession := requests.UserSession{}
+	c.Bind(&dataSession)
+
 	username := c.Param("username")
 	usernameTarget := c.Param("usernameTarget")
-	c.Bind(&dataSession)
 
 	err := controller.UserUseCase.Follow(ctx, username, usernameTarget, dataSession.SessionToDomain())
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
-	return controllers.NewSuccessResponse(c, nil)
+	return controllers.NewSuccessResponse(c, "successfully follow user")
 }
