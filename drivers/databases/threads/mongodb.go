@@ -176,7 +176,7 @@ func (repository *MongoDBThreadRepository) Search(ctx context.Context, q string,
 	opts := options.Find().SetSort(sorting)
 
 	// Create index for threads collection
-	model := mongo.IndexModel{Keys: bson.D{{Key: "title", Value: "text"}}}
+	model := mongo.IndexModel{Keys: bson.D{{Key: "title", Value: "text"},{Key: "content", Value: "text"}}}
 	_, errIndex := repository.Conn.Collection("threads").Indexes().CreateOne(ctx, model)
 	if errIndex != nil {
 		return []threads.Domain{}, errIndex
