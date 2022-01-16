@@ -179,3 +179,18 @@ func (UseCase *UserUseCase) Unfollow(ctx context.Context, username string, targe
 
 	return nil
 }
+
+func (UseCase *UserUseCase) UpdateUserProfile(ctx context.Context, dataSession UserSessionDomain, data UserProfileDomain) error {
+	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
+	if err != nil {
+		return err
+	}
+	if dataSession.Username != getAuthorization.Username {
+		return messages.ErrInvalidSession
+	}
+	errUpdate := UseCase.userRepo.UpdateUserProfile(ctx, getAuthorization.Username, data)
+	if errUpdate != nil {
+		return errUpdate
+	}
+	return nil
+}

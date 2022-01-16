@@ -98,3 +98,20 @@ func (controller *UserController) Unfollow(c echo.Context) error {
 	}
 	return controllers.NewSuccessResponse(c, "successfully unfollow user")
 }
+
+func (controller *UserController) UpdateUserProfile(c echo.Context) error {
+	ctx := c.Request().Context()
+	dataUserProfile := requests.UserProfile{}
+	c.Bind(&dataUserProfile)
+
+	dataSession := requests.UserSession{
+		Token:    c.Param("token"),
+		Username: c.Param("username"),
+	}
+
+	err := controller.UserUseCase.UpdateUserProfile(ctx, dataSession.SessionToDomain(), user.UserProfileDomain(dataUserProfile))
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	return controllers.NewSuccessResponse(c, "successfully update user profile")
+}

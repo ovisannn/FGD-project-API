@@ -31,6 +31,30 @@ func (request *User) UserRegisterToDomain() *user.UserDomain {
 	}
 }
 
+type UserProfile struct {
+	ID          string   `json:"_id,omitempty" bson:"_id,omitempty"`
+	Username    string   `json:"username,omitempty" bson:"username,omitempty"`
+	ProfilePict string   `json:"profile_pict,omitempty" bson:"profile_pict,omitempty"`
+	Bio         string   `json:"bio,omitempty" bson:"bio,omitempty"`
+	Following   []string `json:"following,omitempty" bson:"following,omitempty"`
+	Followers   []string `json:"followers,omitempty" bson:"followers,omitempty"`
+	Threads     []string `json:"threads,omitempty" bson:"threads,omitempty"`
+	Reputation  int      `json:"reputation,omitempty" bson:"reputation,omitempty"`
+}
+
+func (request *UserProfile) UserProfileToDomain() *user.UserProfileDomain {
+	return &user.UserProfileDomain{
+		ID:          request.ID,
+		Username:    request.Username,
+		ProfilePict: request.ProfilePict,
+		Bio:         request.Bio,
+		Following:   request.Following,
+		Followers:   request.Followers,
+		Threads:     request.Threads,
+		Reputation:  request.Reputation,
+	}
+}
+
 type LoginInfo struct {
 	Username string `json:"username" bson:"username"`
 	Password string `json:"password" bson:"password"`
