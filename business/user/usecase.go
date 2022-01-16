@@ -4,6 +4,7 @@ import (
 	"context"
 	"disspace/app/middlewares"
 	"disspace/helpers/messages"
+	"disspace/helpers/reslicing"
 	"time"
 )
 
@@ -121,6 +122,55 @@ func (UseCase *UserUseCase) Follow(ctx context.Context, username string, targetU
 	existingFollowers = append(existingFollowers, username)
 	updateDataTarget := UserProfileDomain{
 		Followers: existingFollowers,
+	}
+	errUpdateTarget := UseCase.userRepo.UpdateUserProfile(ctx, targetUsername, updateDataTarget)
+	if errUpdateTarget != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (UseCase *UserUseCase) Unfollow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error {
+	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
+	if err != nil {
+		return err
+	}
+	getUser, err := UseCase.userRepo.GetUserByUsername(ctx, username)
+	if err != nil {
+		return err
+	}
+	if getUser.Username != getAuthorization.Username {
+		return messages.ErrInvalidSession
+	}
+	//update following
+	getUserProfile, err := UseCase.userRepo.UserProfileGetByUsername(ctx, username)
+	if err != nil {
+		return err
+	}
+	deleteFollowing, errdeleteFollowing := reslicing.DeleteItemFromSlice(getUserProfile.Following, targetUsername)
+	if errdeleteFollowing != nil {
+		return errdeleteFollowing
+	}
+	updateData := UserProfileDomain{
+		Following: deleteFollowing,
+	}
+	errUpdate := UseCase.userRepo.UpdateUserProfile(ctx, username, updateData)
+	if errUpdate != nil {
+		return err
+	}
+
+	//update followers
+	getTargetProfile, err := UseCase.userRepo.UserProfileGetByUsername(ctx, targetUsername)
+	if err != nil {
+		return err
+	}
+	deleteFollowers, errdeleteFollowers := reslicing.DeleteItemFromSlice(getTargetProfile.Followers, username)
+	if errdeleteFollowers != nil {
+		return errdeleteFollowers
+	}
+	updateDataTarget := UserProfileDomain{
+		Followers: deleteFollowers,
 	}
 	errUpdateTarget := UseCase.userRepo.UpdateUserProfile(ctx, targetUsername, updateDataTarget)
 	if errUpdateTarget != nil {

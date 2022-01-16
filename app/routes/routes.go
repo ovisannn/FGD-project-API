@@ -50,10 +50,10 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.POST("/user/login", ctrl.UserController.Login)
 	baseRoute.GET("/user/:id", ctrl.UserController.GetUserByID)
 	baseRoute.PATCH("/user/follow/:username/:usernameTarget", ctrl.UserController.Follow)
-	// baseRoute.PATCH("user/unfollow/:username/:usernameTarget")
-	// baseRoute.PATCH("userProfile/:username")
-	// baseRoute.PATCH("user/:username")
-	// baseRoute.DELETE("user/logout/:username")
+	baseRoute.PATCH("/user/unfollow/:username/:usernameTarget", ctrl.UserController.Unfollow)
+	// baseRoute.PATCH("/userProfile/:username")
+	// baseRoute.PATCH("/user/:username")
+	// baseRoute.DELETE("/user/logout/:username")
 
 	//leaderboard
 	//get leaderboard -> GET

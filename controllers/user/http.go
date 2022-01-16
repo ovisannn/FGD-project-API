@@ -83,3 +83,18 @@ func (controller *UserController) Follow(c echo.Context) error {
 	}
 	return controllers.NewSuccessResponse(c, "successfully follow user")
 }
+
+func (controller *UserController) Unfollow(c echo.Context) error {
+	ctx := c.Request().Context()
+	dataSession := requests.UserSession{}
+	c.Bind(&dataSession)
+
+	username := c.Param("username")
+	usernameTarget := c.Param("usernameTarget")
+
+	err := controller.UserUseCase.Unfollow(ctx, username, usernameTarget, dataSession.SessionToDomain())
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	return controllers.NewSuccessResponse(c, "successfully unfollow user")
+}
