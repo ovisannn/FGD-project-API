@@ -8,7 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoDBCommentRepository struct {
@@ -81,11 +80,6 @@ func (repository *MongoDBCommentRepository) Delete(ctx context.Context, id strin
 
 func (repository *MongoDBCommentRepository) Search(ctx context.Context, q string, sort string) ([]comments.Domain, error) {
 	var result []comments.Domain
-	if sort == "" {
-		sort = "created_at"
-	}
-	sorting := bson.M{sort: -1}
-	opts := options.Find().SetSort(sorting)
 
 	// Create index for comments collection
 	model := mongo.IndexModel{Keys: bson.D{{Key: "text", Value: "text"}}}
@@ -95,12 +89,44 @@ func (repository *MongoDBCommentRepository) Search(ctx context.Context, q string
 	}
 
 	// Search
-	filter := bson.D{}
-	if q != "" {
-		filter = bson.D{{Key: "$text", Value: bson.D{{Key: "$search", Value: q}}}}
+	var votesLookup = bson.M{
+		"from":         "votes",
+		"localField":   "comment_id",
+		"foreignField": "reference_id",
+		"as":           "votes",
 	}
 
-	cursor, err := repository.Conn.Collection("comments").Find(ctx, filter, opts)
+	countVotes := bson.M{"num_votes": bson.M{"$sum": "$votes.status"}}
+	convIdToString := bson.M{"comment_id": bson.M{"$toString": "$_id"}}
+	if sort == "" {
+		sort = "created_at"
+	}
+	sorting := bson.M{sort: -1}
+
+	query := []bson.M{
+		{
+			"$addFields": convIdToString,
+		},
+		{
+			"$lookup": votesLookup,
+		},
+		{
+			"$addFields": countVotes,
+		},
+		{
+			"$sort": sorting,
+		},
+	}
+
+	if q != "" {
+		query = append(query, bson.M{})
+		copy(query[1:], query[0:])
+		query[0] = bson.M{
+			"$match": bson.M{"$text": bson.M{"$search": q}},
+		}
+	}
+
+	cursor, err := repository.Conn.Collection("comments").Aggregate(ctx, query)
 	if err != nil {
 		return []comments.Domain{}, err
 	}

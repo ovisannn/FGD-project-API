@@ -10,7 +10,7 @@ type CommentResponse struct {
 	ThreadID    string    `json:"thread_id,omitempty"`
 	UserID      string    `json:"user_id,omitempty"`
 	Text        string    `json:"text,omitempty"`
-	NumVotes    int       `json:"num_votes,omitempty"`
+	NumVotes    int       `json:"num_votes"`
 	NumComments int       `json:"num_comments,omitempty"`
 	CreatedAt   time.Time `json:"created_at,omitempty"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty"`

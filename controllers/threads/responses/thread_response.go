@@ -13,8 +13,8 @@ type ThreadResponse struct {
 	Title       string                        `json:"title,omitempty"`
 	Content     string                        `json:"content,omitempty"`
 	ImageUrl    string                        `json:"image_url,omitempty"`
-	NumVotes    int                           `json:"num_votes,omitempty"`
-	NumComments int                           `json:"num_comments,omitempty"`
+	NumVotes    int                           `json:"num_votes"`
+	NumComments int                           `json:"num_comments"`
 	Comments    []commentResp.CommentResponse `json:"comments,omitempty"`
 	CreatedAt   time.Time                     `json:"created_at,omitempty"`
 	UpdatedAt   time.Time                     `json:"updated_at,omitempty"`
