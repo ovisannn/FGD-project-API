@@ -32,7 +32,6 @@ import (
 	_reportController "disspace/controllers/reports"
 	_reportRepository "disspace/drivers/databases/reports"
 
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
@@ -57,8 +56,8 @@ func main() {
 		Name:     viper.GetString("database.name"),
 	}
 	configJWT := _middleware.ConfigJwt{
-		SecretJWT:       viper.GetString(`jwt.secret`),
-		ExpiresDuration: viper.GetInt(`jwt.expired`),
+		Secret:    viper.GetString(`jwt.secret`),
+		ExpiresAt: viper.GetInt64(`jwt.expired`),
 	}
 
 	db, _ := config.ConnectDB()
@@ -84,9 +83,8 @@ func main() {
 	voteUseCase := _voteUseCase.NewVoteUseCase(voteRepository, timeoutContext)
 	voteController := _voteController.NewVoteController(voteUseCase)
 
-
 	userRepository := _userRepository.NewMongoDBUserRepository(db)
-	userUseCase := _userUseCase.NewUserUseCase(userRepository, timeoutContext)
+	userUseCase := _userUseCase.NewUserUseCase(userRepository, timeoutContext, configJWT)
 	userController := _userController.NewUserController(userUseCase)
 
 	commentRepository := _commentRepository.NewMongoDBCommentRepository(db)
@@ -97,13 +95,12 @@ func main() {
 	reportUseCase := _reportUseCase.NewReportUseCase(reportRepository, timeoutContext)
 	reportController := _reportController.NewReportController(reportUseCase)
 
-
 	routesInit := _routes.ControllerList{
 		JWTConfig:            configJWT.Init(),
 		ThreadController:     *threadController,
 		CategoriesController: *categoryController,
 		VoteController:       *voteController,
-		UserController: *userController,
+		UserController:       *userController,
 		CommentController:    *commentController,
 		ReportController:     *reportController,
 	}

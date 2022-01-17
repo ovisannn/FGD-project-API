@@ -24,6 +24,7 @@ type ControllerList struct {
 
 func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute := e.Group("/v1")
+	// jwtAuth := middleware.JWTWithConfig(cl.JwtConfig)
 
 	// Threads
 	baseRoute.GET("/threads", ctrl.ThreadController.GetAll)
@@ -45,6 +46,23 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 
 	//user
 	baseRoute.POST("/user/register", ctrl.UserController.Register)
+	baseRoute.GET("/userProfile/:username", ctrl.UserController.UserProfileGetByUsername)
+	baseRoute.POST("/user/login", ctrl.UserController.Login)
+	baseRoute.GET("/user/id/:id", ctrl.UserController.GetUserByID)
+	baseRoute.GET("/user/username/:username", ctrl.UserController.GetUserByUsername)
+	baseRoute.PATCH("/user/follow/:username/:usernameTarget", ctrl.UserController.Follow)
+	baseRoute.PATCH("/user/unfollow/:username/:usernameTarget", ctrl.UserController.Unfollow)
+	baseRoute.PATCH("/userProfile/:username/:token", ctrl.UserController.UpdateUserProfile)
+	baseRoute.PATCH("/user/:username/:token", ctrl.UserController.UpdateUserInfo)
+	baseRoute.PATCH("/user/newPassword/:username/:token", ctrl.UserController.ChangePassword)
+	baseRoute.DELETE("/user/logout/:username/:token", ctrl.UserController.Logout)
+
+	//leaderboard
+	//get leaderboard -> GET
+
+	//moderators
+	//get moderators -> GET
+
 
 	// Comments
 	baseRoute.POST("/users/:id/comments", ctrl.CommentController.Create)

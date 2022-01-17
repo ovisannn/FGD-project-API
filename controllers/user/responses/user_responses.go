@@ -30,3 +30,39 @@ func UserFromDomain(domain user.UserDomain) User {
 		UpdatedAt: domain.UpdatedAt,
 	}
 }
+
+type UserProfile struct {
+	ID          string   `json:"_id,omitempty" bson:"_id,omitempty"`
+	Username    string   `json:"username" bson:"username"`
+	ProfilePict string   `json:"profile_pict" bson:"profile_pict"`
+	Bio         string   `json:"bio" bson:"bio"`
+	Following   []string `json:"following" bson:"following"`
+	Followers   []string `json:"followers" bson:"followers"`
+	Threads     []string `json:"threads" bson:"threads"`
+	Reputation  int      `json:"reputation" bson:"reputation"`
+}
+
+func UserProfileFromDomain(domain user.UserProfileDomain) UserProfile {
+	return UserProfile{
+		ID:          domain.ID,
+		Username:    domain.Username,
+		ProfilePict: domain.ProfilePict,
+		Bio:         domain.Bio,
+		Following:   domain.Following,
+		Followers:   domain.Followers,
+		Threads:     domain.Threads,
+		Reputation:  domain.Reputation,
+	}
+}
+
+type UserSession struct {
+	Token    string `json:"token" bson:"token"`
+	Username string `json:"username" bson:"username"`
+}
+
+func SessionFromDomain(domain user.UserSessionDomain) UserSession {
+	return UserSession{
+		Token:    domain.Token,
+		Username: domain.Username,
+	}
+}
