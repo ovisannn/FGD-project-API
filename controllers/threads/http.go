@@ -1,4 +1,4 @@
-package threads
+ package threads
 
 import (
 	"disspace/business/threads"
@@ -22,9 +22,10 @@ func NewThreadController(threadUseCase threads.UseCase) *ThreadController {
 
 func (controller *ThreadController) GetAll(c echo.Context) error {
 	threads := []responses.ThreadResponse{}
+	sorting := c.QueryParam("sort")
 	ctx := c.Request().Context()
 
-	result, err := controller.ThreadUseCase.GetAll(ctx)
+	result, err := controller.ThreadUseCase.GetAll(ctx, sorting)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
@@ -73,16 +74,32 @@ func (controller *ThreadController) Delete(c echo.Context) error {
 }
 
 func (controller *ThreadController) Update(c echo.Context) error {
-	updateThread := requests.Thread{}
+	updateThread := requests.ThreadUpdate{}
 	c.Bind(&updateThread)
 
 	ctx := c.Request().Context()
 
 	id := c.Param("id")
 
-	err := controller.ThreadUseCase.Update(ctx, updateThread.ToDomain(), id)
+	err := controller.ThreadUseCase.Update(ctx, updateThread.ToDomainUpdate(), id)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
 	return controllers.NewSuccessResponse(c, "successfully update thread")
+}
+
+func (controller *ThreadController) Search(c echo.Context) error {
+	threads := []responses.ThreadResponse{}
+	query := c.QueryParam("q")
+	sorting := c.QueryParam("sort")
+	ctx := c.Request().Context()
+
+	result, err := controller.ThreadUseCase.Search(ctx, query, sorting)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusNotFound, err)
+	}
+	for _, item := range result {
+		threads = append(threads, responses.FromDomain(item))
+	}
+	return controllers.NewSuccessResponse(c, threads)
 }

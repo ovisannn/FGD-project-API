@@ -24,3 +24,11 @@ func (useCase *ReportUseCase) Create(ctx context.Context, reportDomain *Domain, 
 	}
 	return nil
 }
+
+func (useCase *ReportUseCase) GetAll(ctx context.Context, sort string) ([]Domain, error) {
+	result, err := useCase.reportRepo.GetAll(ctx, sort)
+	if err != nil {
+		return []Domain{}, err
+	}
+	return result, nil
+}

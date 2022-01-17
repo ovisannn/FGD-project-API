@@ -4,6 +4,7 @@ import (
 	"disspace/business/reports"
 	"disspace/controllers"
 	"disspace/controllers/reports/request"
+	"disspace/controllers/reports/response"
 	"disspace/helpers/messages"
 	"net/http"
 
@@ -38,4 +39,21 @@ func (controller *ReportController) Create(c echo.Context) error {
 		return controllers.NewErrorResponse(c, http.StatusConflict, err)
 	}
 	return controllers.NewSuccessResponse(c, "successfully reported target")
+}
+
+func (controller *ReportController) GetAll(c echo.Context) error {
+	reports := []response.ReportResponse{}
+	sorting := c.QueryParam("sort")
+	ctx := c.Request().Context()
+
+	result, err := controller.ReportUseCase.GetAll(ctx, sorting)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+
+	for _, item := range result {
+		reports = append(reports, response.FromDomain(item))
+	}
+	return controllers.NewSuccessResponse(c, reports)
+
 }
