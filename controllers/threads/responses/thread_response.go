@@ -7,6 +7,8 @@ import (
 
 type ThreadResponse struct {
 	ID          string    `json:"_id"`
+	UserID      string    `json:"user_id,omitempty"`
+	CategoryID  string    `json:"category_id,omitempty"`
 	Title       string    `json:"title,omitempty"`
 	Content     string    `json:"content,omitempty"`
 	ImageUrl    string    `json:"image_url,omitempty"`
@@ -19,6 +21,8 @@ type ThreadResponse struct {
 func FromDomain(domain threads.Domain) ThreadResponse {
 	return ThreadResponse{
 		ID:          domain.ID,
+		UserID:      domain.UserID,
+		CategoryID:  domain.CategoryID,
 		Title:       domain.Title,
 		Content:     domain.Content,
 		ImageUrl:    domain.ImageUrl,

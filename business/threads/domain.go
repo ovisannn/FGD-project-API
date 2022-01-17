@@ -7,6 +7,8 @@ import (
 
 type Domain struct {
 	ID          string    `bson:"_id,omitempty"`
+	UserID      string    `bson:"user_id"`
+	CategoryID  string    `bson:"category_id"`
 	Title       string    `bson:"title"`
 	Content     string    `bson:"content"`
 	ImageUrl    string    `bson:"image_url"`
@@ -17,7 +19,7 @@ type Domain struct {
 }
 
 type UseCase interface {
-	GetAll(ctx context.Context) ([]Domain, error)
+	GetAll(ctx context.Context, sort string) ([]Domain, error)
 	Create(ctx context.Context, data *Domain) (Domain, error)
 	Delete(ctx context.Context, id string) error
 	GetByID(ctx context.Context, id string) (Domain, error)
@@ -25,7 +27,7 @@ type UseCase interface {
 }
 
 type Repository interface {
-	GetAll(ctx context.Context) ([]Domain, error)
+	GetAll(ctx context.Context, sort string) ([]Domain, error)
 	Create(ctx context.Context, data *Domain) (Domain, error)
 	Delete(ctx context.Context, id string) error
 	GetByID(ctx context.Context, id string) (Domain, error)

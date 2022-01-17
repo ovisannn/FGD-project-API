@@ -18,8 +18,8 @@ func NewThreadUseCase(threadRepository Repository, timeout time.Duration) UseCas
 	}
 }
 
-func (useCase *ThreadUseCase) GetAll(ctx context.Context) ([]Domain, error) {
-	result, err := useCase.threadRepo.GetAll(ctx)
+func (useCase *ThreadUseCase) GetAll(ctx context.Context, sort string) ([]Domain, error) {
+	result, err := useCase.threadRepo.GetAll(ctx, sort)
 	if err != nil {
 		return []Domain{}, err
 	}
