@@ -156,3 +156,16 @@ func (controller *UserController) UpdateUserInfo(c echo.Context) error {
 	}
 	return controllers.NewSuccessResponse(c, "successfully update user information")
 }
+
+func (controller *UserController) Logout(c echo.Context) error {
+	ctx := c.Request().Context()
+	dataSession := requests.UserSession{
+		Token:    c.Param("token"),
+		Username: c.Param("username"),
+	}
+	err := controller.UserUseCase.Logout(ctx, dataSession.SessionToDomain())
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	return controllers.NewSuccessResponse(c, "successfully logout")
+}

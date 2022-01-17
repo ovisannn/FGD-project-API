@@ -55,7 +55,7 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.PATCH("/userProfile/:username/:token", ctrl.UserController.UpdateUserProfile)
 	baseRoute.PATCH("/user/:username/:token", ctrl.UserController.UpdateUserInfo)
 	baseRoute.PATCH("/user/newPassword/:username/:token", ctrl.UserController.ChangePassword)
-	// baseRoute.DELETE("/user/logout/:username")
+	baseRoute.DELETE("/user/logout/:username/:token", ctrl.UserController.Logout)
 
 	//leaderboard
 	//get leaderboard -> GET

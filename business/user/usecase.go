@@ -245,3 +245,18 @@ func (UseCase *UserUseCase) ChangePassword(ctx context.Context, dataSession User
 	}
 	return nil
 }
+
+func (UseCase *UserUseCase) Logout(ctx context.Context, dataSession UserSessionDomain) error {
+	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
+	if err != nil {
+		return err
+	}
+	if dataSession.Username != getAuthorization.Username {
+		return messages.ErrInvalidSession
+	}
+	errLogout := UseCase.userRepo.DeleteSession(ctx, dataSession)
+	if errLogout != nil {
+		return err
+	}
+	return nil
+}

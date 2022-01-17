@@ -172,3 +172,13 @@ func (repository *MongoDBUserRepository) UpdateUserInfo(ctx context.Context, use
 	}
 	return nil
 }
+
+func (repository *MongoDBUserRepository) DeleteSession(ctx context.Context, dataSession user.UserSessionDomain) error {
+
+	_, err := repository.Conn.Collection("session").DeleteOne(ctx, bson.D{{Key: "token", Value: dataSession.Token}})
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
