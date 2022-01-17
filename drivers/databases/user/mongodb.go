@@ -153,7 +153,7 @@ func (repository *MongoDBUserRepository) GetUserByUsername(ctx context.Context, 
 	filter := bson.D{{Key: "username", Value: username}}
 	err := repository.Conn.Collection("users").FindOne(ctx, filter).Decode(&result)
 	if err != nil {
-		return user.UserDomain{}, messages.ErrDataNotFound
+		return user.UserDomain{}, err
 	}
 	// fmt.Println(result)
 	return result.UserToDomain(), nil

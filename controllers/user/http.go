@@ -57,12 +57,22 @@ func (controller *UserController) Login(c echo.Context) error {
 
 func (controller *UserController) GetUserByID(c echo.Context) error {
 	ctx := c.Request().Context()
-	// user := responses.User{}
 	dataSession := requests.UserSession{}
 	id := c.Param("id")
 	c.Bind(&dataSession)
-	// fmt.Println("id : " + id)
 	result, err := controller.UserUseCase.GetUserByID(ctx, id, dataSession.SessionToDomain())
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	return controllers.NewSuccessResponse(c, responses.UserFromDomain(result))
+}
+
+func (controller *UserController) GetUserByUsername(c echo.Context) error {
+	ctx := c.Request().Context()
+	dataSession := requests.UserSession{}
+	id := c.Param("username")
+	c.Bind(&dataSession)
+	result, err := controller.UserUseCase.GetUserByUsername(ctx, id, dataSession.SessionToDomain())
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}

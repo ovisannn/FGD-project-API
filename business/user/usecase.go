@@ -81,6 +81,22 @@ func (UseCase *UserUseCase) GetUserByID(ctx context.Context, id string, dataSess
 	return getUser, nil
 }
 
+func (UseCase *UserUseCase) GetUserByUsername(ctx context.Context, username string, dataSession UserSessionDomain) (UserDomain, error) {
+	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
+	if err != nil {
+		return UserDomain{}, err
+	}
+	getUser, err := UseCase.userRepo.GetUserByUsername(ctx, username)
+	if err != nil {
+		return UserDomain{}, err
+	}
+	if getUser.Username != getAuthorization.Username {
+		return UserDomain{}, messages.ErrInvalidSession
+	}
+
+	return getUser, nil
+}
+
 func (UseCase *UserUseCase) Follow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error {
 	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
 	if err != nil {
