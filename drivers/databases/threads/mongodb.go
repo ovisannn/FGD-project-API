@@ -67,7 +67,7 @@ func (repository *MongoDBThreadRepository) GetAll(ctx context.Context, sort stri
 
 	cursor, err := repository.Conn.Collection("threads").Aggregate(ctx, query)
 	if err != nil {
-		panic(err)
+		return []threads.Domain{}, err
 	}
 
 	if err = cursor.All(ctx, &result); err != nil {
@@ -164,4 +164,63 @@ func (repository *MongoDBThreadRepository) Update(ctx context.Context, threadDom
 		return err
 	}
 	return nil
+}
+
+func (repository *MongoDBThreadRepository) Search(ctx context.Context, q string, sort string) ([]threads.Domain, error) {
+	var result []threads.Domain
+
+	// Create index for threads collection
+	model := mongo.IndexModel{Keys: bson.D{{Key: "title", Value: "text"}, {Key: "content", Value: "text"}}}
+	_, errIndex := repository.Conn.Collection("threads").Indexes().CreateOne(ctx, model)
+	if errIndex != nil {
+		return []threads.Domain{}, errIndex
+	}
+
+	// Search
+	countVotes := bson.M{"num_votes": bson.M{"$sum": "$votes.status"}}
+	countComments := bson.M{"num_comments": bson.M{"$size": "$comments"}}
+	convIdToString := bson.M{"thread_id": bson.M{"$toString": "$_id"}}
+	if sort == "" {
+		sort = "created_at"
+	}
+	sorting := bson.M{sort: -1}
+
+	query := []bson.M{
+		{
+			"$addFields": convIdToString,
+		},
+		{
+			"$lookup": votesLookup,
+		},
+		{
+			"$lookup": commentLookup,
+		},
+		{
+			"$addFields": countVotes,
+		},
+		{
+			"$addFields": countComments,
+		},
+		{
+			"$sort": sorting,
+		},
+	}
+
+	if q != "" {
+		query = append(query, bson.M{})
+		copy(query[1:], query[0:])
+		query[0] = bson.M{
+			"$match": bson.M{"$text": bson.M{"$search": q}},
+		}
+	}
+
+	cursor, err := repository.Conn.Collection("threads").Aggregate(ctx, query)
+	if err != nil {
+		return []threads.Domain{}, err
+	}
+
+	if err = cursor.All(ctx, &result); err != nil {
+		return []threads.Domain{}, err
+	}
+	return result, nil
 }

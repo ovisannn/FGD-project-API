@@ -55,3 +55,20 @@ func (controller *CommentController) Delete(c echo.Context) error {
 	}
 	return controllers.NewSuccessResponse(c, "successfully delete comment")
 }
+
+func (controller *CommentController) Search(c echo.Context) error {
+	comments := []response.CommentResponse{}
+	query := c.QueryParam("q")
+	sorting := c.QueryParam("sort")
+	ctx := c.Request().Context()
+
+	result, err := controller.CommentUseCase.Search(ctx, query, sorting)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusNotFound, err)
+	}
+
+	for _, item := range result {
+		comments = append(comments, response.FromDomain(item))
+	}
+	return controllers.NewSuccessResponse(c, comments)
+}

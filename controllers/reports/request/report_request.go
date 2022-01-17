@@ -19,6 +19,7 @@ func (request *Report) ToDomain() *reports.Domain {
 		ReportedBy: request.ReportedBy,
 		TargetID:   request.TargetID,
 		TargetType: request.TargetType,
+		Description: request.Description,
 		UniqueID:   request.ReportedBy + request.TargetID,
 		CreatedAt:  time.Now(),
 	}
