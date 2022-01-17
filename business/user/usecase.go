@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"disspace/app/middlewares"
+	"disspace/helpers/encryption"
 	"disspace/helpers/messages"
 	"disspace/helpers/reslicing"
 	"time"
@@ -220,6 +221,25 @@ func (UseCase *UserUseCase) UpdateUserInfo(ctx context.Context, dataSession User
 		return messages.ErrInvalidSession
 	}
 	errUpdate := UseCase.userRepo.UpdateUserInfo(ctx, getAuthorization.Username, data)
+	if errUpdate != nil {
+		return errUpdate
+	}
+	return nil
+}
+
+func (UseCase *UserUseCase) ChangePassword(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error {
+	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
+	if err != nil {
+		return err
+	}
+	if dataSession.Username != getAuthorization.Username {
+		return messages.ErrInvalidSession
+	}
+	encryptedPass, _ := encryption.HashPassword(data.Password)
+	updateData := UserDomain{
+		Password: encryptedPass,
+	}
+	errUpdate := UseCase.userRepo.UpdateUserInfo(ctx, getAuthorization.Username, updateData)
 	if errUpdate != nil {
 		return errUpdate
 	}

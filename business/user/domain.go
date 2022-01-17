@@ -49,6 +49,7 @@ type UseCase interface {
 	Unfollow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error
 	UpdateUserProfile(ctx context.Context, dataSession UserSessionDomain, data UserProfileDomain) error
 	UpdateUserInfo(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error
+	ChangePassword(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error
 }
 
 type Repository interface {

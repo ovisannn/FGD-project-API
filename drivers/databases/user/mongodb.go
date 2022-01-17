@@ -36,7 +36,7 @@ func (repository *MongoDBUserRepository) Register(ctx context.Context, data *use
 		return user.UserDomain{}, messages.ErrUsernameAlreadyExist
 	}
 
-	encryptedPass := encryption.Encode(newUser.Password)
+	encryptedPass, _ := encryption.HashPassword(newUser.Password)
 	newUser.Password = encryptedPass
 	_, err := repository.Conn.Collection("users").InsertOne(ctx, newUser)
 
@@ -93,8 +93,10 @@ func (repository *MongoDBUserRepository) Login(ctx context.Context, username str
 	if err != nil {
 		return user.UserDomain{}, err
 	}
-	decodedPass := encryption.Decode(result.Password)
-	if password != decodedPass {
+	// decodedPass := encryption.Decode(result.Password)
+	isMatch := encryption.CheckPasswordHash(password, result.Password)
+	// fmt.Println(result.Password)
+	if isMatch != true {
 		return user.UserDomain{}, messages.ErrInvalidCredentials
 	}
 	return result.UserToDomain(), nil

@@ -126,6 +126,22 @@ func (controller *UserController) UpdateUserProfile(c echo.Context) error {
 	return controllers.NewSuccessResponse(c, "successfully update user profile")
 }
 
+func (controller *UserController) ChangePassword(c echo.Context) error {
+	ctx := c.Request().Context()
+	dataUser := requests.User{}
+	c.Bind(&dataUser)
+
+	dataSession := requests.UserSession{
+		Token:    c.Param("token"),
+		Username: c.Param("username"),
+	}
+	err := controller.UserUseCase.ChangePassword(ctx, dataSession.SessionToDomain(), *dataUser.UserInfoUpdateToDomain())
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	return controllers.NewSuccessResponse(c, "successfully update user password")
+}
+
 func (controller *UserController) UpdateUserInfo(c echo.Context) error {
 	ctx := c.Request().Context()
 	dataUserInfo := requests.User{}
