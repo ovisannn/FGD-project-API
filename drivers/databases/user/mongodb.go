@@ -57,7 +57,6 @@ func (repository *MongoDBUserRepository) Register(ctx context.Context, data *use
 		return user.UserDomain{}, err
 	}
 	return user.UserDomain{}, nil
-
 }
 
 func (repository *MongoDBUserRepository) UserProfileGetByUsername(ctx context.Context, username string) (user.UserProfileDomain, error) {
@@ -158,4 +157,16 @@ func (repository *MongoDBUserRepository) GetUserByUsername(ctx context.Context, 
 	}
 	// fmt.Println(result)
 	return result.UserToDomain(), nil
+}
+
+func (repository *MongoDBUserRepository) UpdateUserInfo(ctx context.Context, username string, data user.UserDomain) error {
+	userProfile := UserFromDomain(data)
+
+	update := bson.D{{Key: "$set", Value: userProfile}}
+	filter := bson.D{{Key: "username", Value: username}}
+	err := repository.Conn.Collection("users").FindOneAndUpdate(ctx, filter, update)
+	if err.Err() != nil {
+		return messages.ErrUpdateFailed
+	}
+	return nil
 }

@@ -49,10 +49,11 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.GET("/userProfile/:username", ctrl.UserController.UserProfileGetByUsername)
 	baseRoute.POST("/user/login", ctrl.UserController.Login)
 	baseRoute.GET("/user/:id", ctrl.UserController.GetUserByID)
+	//baseRoute.GET("/user/:username", ctrl.UserController.GetUserByID)
 	baseRoute.PATCH("/user/follow/:username/:usernameTarget", ctrl.UserController.Follow)
 	baseRoute.PATCH("/user/unfollow/:username/:usernameTarget", ctrl.UserController.Unfollow)
 	baseRoute.PATCH("/userProfile/:username/:token", ctrl.UserController.UpdateUserProfile)
-	// baseRoute.PATCH("/user/:username")
+	baseRoute.PATCH("/user/:username/:token", ctrl.UserController.UpdateUserInfo)
 	// baseRoute.DELETE("/user/logout/:username")
 
 	//leaderboard

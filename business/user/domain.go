@@ -47,6 +47,7 @@ type UseCase interface {
 	Follow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error
 	Unfollow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error
 	UpdateUserProfile(ctx context.Context, dataSession UserSessionDomain, data UserProfileDomain) error
+	UpdateUserInfo(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error
 }
 
 type Repository interface {
@@ -56,6 +57,7 @@ type Repository interface {
 	GetUserByUsername(ctx context.Context, username string) (UserDomain, error)
 	Login(ctx context.Context, username string, password string) (UserDomain, error)
 	UpdateUserProfile(ctx context.Context, username string, data UserProfileDomain) error
+	UpdateUserInfo(ctx context.Context, username string, data UserDomain) error
 
 	CheckingSession(ctx context.Context, username string) error
 	InsertSession(ctx context.Context, dataSession UserSessionDomain) error

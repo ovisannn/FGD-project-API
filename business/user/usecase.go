@@ -194,3 +194,18 @@ func (UseCase *UserUseCase) UpdateUserProfile(ctx context.Context, dataSession U
 	}
 	return nil
 }
+
+func (UseCase *UserUseCase) UpdateUserInfo(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error {
+	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
+	if err != nil {
+		return err
+	}
+	if dataSession.Username != getAuthorization.Username {
+		return messages.ErrInvalidSession
+	}
+	errUpdate := UseCase.userRepo.UpdateUserInfo(ctx, getAuthorization.Username, data)
+	if errUpdate != nil {
+		return errUpdate
+	}
+	return nil
+}

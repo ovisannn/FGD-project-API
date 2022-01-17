@@ -31,6 +31,19 @@ func (request *User) UserRegisterToDomain() *user.UserDomain {
 	}
 }
 
+func (request *User) UserInfoUpdateToDomain() *user.UserDomain {
+	return &user.UserDomain{
+		FullName:  request.FullName,
+		Username:  request.Username,
+		Password:  request.Password,
+		Email:     request.Email,
+		Gender:    request.Gender,
+		Role:      request.Role,
+		Status:    request.Status,
+		UpdatedAt: time.Now(),
+	}
+}
+
 type UserProfile struct {
 	ID          string   `json:"_id,omitempty" bson:"_id,omitempty"`
 	Username    string   `json:"username,omitempty" bson:"username,omitempty"`
