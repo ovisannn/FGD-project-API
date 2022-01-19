@@ -3,6 +3,7 @@ package responses
 import (
 	"disspace/business/threads"
 	commentResp "disspace/controllers/comments/response"
+	userResp "disspace/controllers/user/responses"
 	votesResp "disspace/controllers/votes/response"
 	"time"
 )
@@ -10,6 +11,7 @@ import (
 type ThreadResponse struct {
 	ID          string                        `json:"_id"`
 	UserID      string                        `json:"user_id,omitempty"`
+	User        userResp.UserProfile          `json:"user,omitempty"`
 	CategoryID  string                        `json:"category_id,omitempty"`
 	Title       string                        `json:"title,omitempty"`
 	Content     string                        `json:"content,omitempty"`
@@ -36,6 +38,7 @@ func FromDomain(domain threads.Domain) ThreadResponse {
 	return ThreadResponse{
 		ID:          domain.ID,
 		UserID:      domain.UserID,
+		User:        userResp.UserProfileFromDomain(domain.User),
 		CategoryID:  domain.CategoryID,
 		Title:       domain.Title,
 		Content:     domain.Content,

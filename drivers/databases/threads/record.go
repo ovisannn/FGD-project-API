@@ -5,6 +5,7 @@ import (
 	"disspace/business/threads"
 	"disspace/business/votes"
 	commentDb "disspace/drivers/databases/comments"
+	"disspace/drivers/databases/user"
 	voteDb "disspace/drivers/databases/votes"
 
 	"time"
@@ -13,6 +14,7 @@ import (
 type Thread struct {
 	ID          string              `json:"_id,omitempty" bson:"_id,omitempty"`
 	UserID      string              `json:"user_id,omitempty" bson:"user_id,omitempty"`
+	User        user.UserProfile    `json:"user,omitempty" bson:"user,omitempty"`
 	CategoryID  string              `json:"category_id,omitempty" bson:"category_id,omitempty"`
 	Title       string              `json:"title,omitempty" bson:"title,omitempty"`
 	Content     string              `json:"content,omitempty" bson:"content,omitempty"`
@@ -39,6 +41,7 @@ func (record *Thread) ToDomain() threads.Domain {
 	return threads.Domain{
 		ID:          record.ID,
 		UserID:      record.UserID,
+		User:        record.User.UserProfileToDomain(),
 		CategoryID:  record.CategoryID,
 		Title:       record.Title,
 		Content:     record.Content,

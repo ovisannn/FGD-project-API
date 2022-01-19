@@ -33,6 +33,13 @@ var commentLookup = bson.M{
 	"as":           "comments",
 }
 
+var userLookup = bson.M{
+	"from":         "user_profile",
+	"localField":   "user_id",
+	"foreignField": "username",
+	"as":           "user",
+}
+
 func (repository *MongoDBThreadRepository) GetAll(ctx context.Context, sort string) ([]threads.Domain, error) {
 	var result []threads.Domain
 
@@ -49,10 +56,16 @@ func (repository *MongoDBThreadRepository) GetAll(ctx context.Context, sort stri
 			"$addFields": convIdToString,
 		},
 		{
+			"$lookup": userLookup,
+		},
+		{
 			"$lookup": votesLookup,
 		},
 		{
 			"$lookup": commentLookup,
+		},
+		{
+			"$unwind": "$user",
 		},
 		{
 			"$addFields": countVotes,
@@ -123,10 +136,16 @@ func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id strin
 			"$addFields": convIdToString,
 		},
 		{
+			"$lookup": userLookup,
+		},
+		{
 			"$lookup": votesLookup,
 		},
 		{
 			"$lookup": commentLookup,
+		},
+		{
+			"$unwind": "$user",
 		},
 		{
 			"$addFields": countVotes,
@@ -194,10 +213,16 @@ func (repository *MongoDBThreadRepository) Search(ctx context.Context, q string,
 			"$addFields": convIdToString,
 		},
 		{
+			"$lookup": userLookup,
+		},
+		{
 			"$lookup": votesLookup,
 		},
 		{
 			"$lookup": commentLookup,
+		},
+		{
+			"$unwind": "user",
 		},
 		{
 			"$addFields": countVotes,
