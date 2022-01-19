@@ -222,7 +222,7 @@ func (repository *MongoDBThreadRepository) Search(ctx context.Context, q string,
 			"$lookup": commentLookup,
 		},
 		{
-			"$unwind": "user",
+			"$unwind": "$user",
 		},
 		{
 			"$addFields": countVotes,
