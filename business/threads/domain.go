@@ -3,6 +3,7 @@ package threads
 import (
 	"context"
 	"disspace/business/comments"
+	"disspace/business/votes"
 	"time"
 )
 
@@ -15,6 +16,7 @@ type Domain struct {
 	ImageUrl    string            `bson:"image_url"`
 	NumVotes    int               `bson:"num_votes,omitempty"`
 	NumComments int               `bson:"num_comments,omitempty"`
+	Votes       []votes.Domain    `bson:"votes,omitempty"`
 	Comments    []comments.Domain `bson:"comments,omitempty"`
 	CreatedAt   time.Time         `bson:"created_at"`
 	UpdatedAt   time.Time         `bson:"updated_at"`

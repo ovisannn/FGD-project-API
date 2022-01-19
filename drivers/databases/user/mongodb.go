@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoDBUserRepository struct {
@@ -181,4 +182,37 @@ func (repository *MongoDBUserRepository) DeleteSession(ctx context.Context, data
 		return err
 	}
 	return nil
+}
+
+func (repository *MongoDBUserRepository) Search(ctx context.Context, q string, sort string) ([]user.UserProfileDomain, error) {
+	var result []user.UserProfileDomain
+	if sort == "" {
+		sort = "_id"
+	}
+	sorting := bson.M{sort: -1}
+	opts := options.Find().SetSort(sorting)
+
+	// Index for user_profile collection
+	model := mongo.IndexModel{Keys: bson.D{{Key: "username", Value: "text"}}}
+	_, errIndex := repository.Conn.Collection("user_profile").Indexes().CreateOne(ctx, model)
+	if errIndex != nil {
+		return []user.UserProfileDomain{}, errIndex
+	}
+
+	// Search Users
+	filter := bson.D{}
+	if q != "" {
+		filter = bson.D{{Key: "username", Value: primitive.Regex{Pattern: q, Options: "i"}}}
+	}
+
+	cursor, err := repository.Conn.Collection("user_profile").Find(ctx, filter, opts)
+	if err != nil {
+		return []user.UserProfileDomain{}, err
+	}
+
+	if err = cursor.All(ctx, &result); err != nil {
+		return []user.UserProfileDomain{}, err
+	}
+
+	return result, nil
 }

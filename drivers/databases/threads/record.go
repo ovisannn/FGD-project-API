@@ -3,7 +3,9 @@ package threads
 import (
 	"disspace/business/comments"
 	"disspace/business/threads"
+	"disspace/business/votes"
 	commentDb "disspace/drivers/databases/comments"
+	voteDb "disspace/drivers/databases/votes"
 
 	"time"
 )
@@ -18,6 +20,7 @@ type Thread struct {
 	NumVotes    int                 `json:"num_votes,omitempty" bson:"num_votes,omitempty"`
 	NumComments int                 `json:"num_comments,omitempty" bson:"num_comments,omitempty"`
 	Comments    []commentDb.Comment `json:"comments,omitempty" bson:"comments,omitempty"`
+	Votes       []voteDb.Vote       `json:"votes,omitempty" bson:"votes,omitempty"`
 	CreatedAt   time.Time           `json:"created_at,omitempty" bson:"created_at,omitempty"`
 	UpdatedAt   time.Time           `json:"updated_at" bson:"updated_at"`
 }
@@ -26,6 +29,11 @@ func (record *Thread) ToDomain() threads.Domain {
 	var comments []comments.Domain
 	for _, comment := range record.Comments {
 		comments = append(comments, comment.ToDomain())
+	}
+
+	var votes []votes.Domain
+	for _, vote := range record.Votes {
+		votes = append(votes, vote.ToDomain())
 	}
 
 	return threads.Domain{
@@ -38,6 +46,7 @@ func (record *Thread) ToDomain() threads.Domain {
 		NumVotes:    record.NumVotes,
 		NumComments: record.NumComments,
 		Comments:    comments,
+		Votes:       votes,
 		CreatedAt:   record.CreatedAt,
 		UpdatedAt:   record.UpdatedAt,
 	}
@@ -47,6 +56,11 @@ func FromDomain(domain threads.Domain) Thread {
 	var comments []commentDb.Comment
 	for _, comment := range domain.Comments {
 		comments = append(comments, commentDb.FromDomain(comment))
+	}
+
+	var votes []voteDb.Vote
+	for _, vote := range domain.Votes {
+		votes = append(votes, voteDb.FromDomain(vote))
 	}
 
 	return Thread{
@@ -59,6 +73,7 @@ func FromDomain(domain threads.Domain) Thread {
 		NumVotes:    domain.NumVotes,
 		NumComments: domain.NumComments,
 		Comments:    comments,
+		Votes:       votes,
 		CreatedAt:   domain.CreatedAt,
 		UpdatedAt:   domain.UpdatedAt,
 	}

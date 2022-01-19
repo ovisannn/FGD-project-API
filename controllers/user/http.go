@@ -169,3 +169,20 @@ func (controller *UserController) Logout(c echo.Context) error {
 	}
 	return controllers.NewSuccessResponse(c, "successfully logout")
 }
+
+func (controller *UserController) Search(c echo.Context) error {
+	users := []responses.UserProfile{}
+	query := c.QueryParam("q")
+	sorting := c.QueryParam("sort")
+	ctx := c.Request().Context()
+
+	result, err := controller.UserUseCase.Search(ctx, query, sorting)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusNotFound, err)
+	}
+
+	for _, item := range result {
+		users = append(users, responses.UserProfileFromDomain(item))
+	}
+	return controllers.NewSuccessResponse(c, users)
+}

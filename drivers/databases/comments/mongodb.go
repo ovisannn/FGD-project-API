@@ -23,10 +23,10 @@ func NewMongoDBCommentRepository(conn *mongo.Database) comments.Repository {
 
 func (repository *MongoDBCommentRepository) Create(ctx context.Context, commentDomain *comments.Domain, id string) (comments.Domain, error) {
 	// Start Error Handling
-	_, errConvId := primitive.ObjectIDFromHex(id)
-	if errConvId != nil {
-		return comments.Domain{}, messages.ErrInvalidUserID
-	}
+	// _, errConvId := primitive.ObjectIDFromHex(id)
+	// if errConvId != nil {
+	// 	return comments.Domain{}, messages.ErrInvalidUserID
+	// }
 
 	// // Filter
 	// filter := bson.D{{Key: "_id", Value: convId}}
@@ -97,7 +97,7 @@ func (repository *MongoDBCommentRepository) Search(ctx context.Context, q string
 	// Search
 	filter := bson.D{}
 	if q != "" {
-		filter = bson.D{{Key: "$text", Value: bson.D{{Key: "$search", Value: q}}}}
+		filter = bson.D{{Key: "username", Value: primitive.Regex{Pattern: q, Options: "i"}}}
 	}
 
 	cursor, err := repository.Conn.Collection("comments").Find(ctx, filter, opts)

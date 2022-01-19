@@ -75,4 +75,5 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	// Search (Users, Threads, Comments)
 	baseRoute.GET("/threads/search", ctrl.ThreadController.Search)
 	baseRoute.GET("/comments/search", ctrl.CommentController.Search)
+	baseRoute.GET("/users/search", ctrl.UserController.Search)
 }

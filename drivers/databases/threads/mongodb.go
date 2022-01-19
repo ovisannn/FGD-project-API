@@ -184,8 +184,12 @@ func (repository *MongoDBThreadRepository) Search(ctx context.Context, q string,
 		sort = "created_at"
 	}
 	sorting := bson.M{sort: -1}
+	title := bson.M{"title": primitive.Regex{Pattern: q, Options: "i"}}
 
 	query := []bson.M{
+		{
+			"$match": title,
+		},
 		{
 			"$addFields": convIdToString,
 		},
@@ -204,14 +208,6 @@ func (repository *MongoDBThreadRepository) Search(ctx context.Context, q string,
 		{
 			"$sort": sorting,
 		},
-	}
-
-	if q != "" {
-		query = append(query, bson.M{})
-		copy(query[1:], query[0:])
-		query[0] = bson.M{
-			"$match": bson.M{"$text": bson.M{"$search": q}},
-		}
 	}
 
 	cursor, err := repository.Conn.Collection("threads").Aggregate(ctx, query)

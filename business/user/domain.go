@@ -51,6 +51,7 @@ type UseCase interface {
 	UpdateUserInfo(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error
 	ChangePassword(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error
 	Logout(ctx context.Context, dataSession UserSessionDomain) error
+	Search(ctx context.Context, q string, sort string) ([]UserProfileDomain, error)
 }
 
 type Repository interface {
@@ -66,4 +67,5 @@ type Repository interface {
 	InsertSession(ctx context.Context, dataSession UserSessionDomain) error
 	DeleteSession(ctx context.Context, dataSession UserSessionDomain) error
 	ConfirmAuthorization(ctx context.Context, session UserSessionDomain) (UserSessionDomain, error)
+	Search(ctx context.Context, q string, sort string) ([]UserProfileDomain, error)
 }
