@@ -41,10 +41,7 @@ func (UseCase *UserUseCase) UserProfileGetByUsername(ctx context.Context, userna
 }
 
 func (UseCase *UserUseCase) Login(ctx context.Context, username string, password string) (UserSessionDomain, error) {
-	// loggedInCheck := UseCase.userRepo.CheckingSession(ctx, username)
-	// if loggedInCheck != nil {
-	// 	return UserSessionDomain{}, loggedInCheck
-	// }
+
 	result, err := UseCase.userRepo.Login(ctx, username, password)
 	if err != nil {
 		return UserSessionDomain{}, err
@@ -58,26 +55,15 @@ func (UseCase *UserUseCase) Login(ctx context.Context, username string, password
 		Token:    userToken,
 		Username: result.Username,
 	}
-	// errSession := UseCase.userRepo.InsertSession(ctx, newSession)
-	// if errSession != nil {
-	// 	return UserSessionDomain{}, err
-	// }
-	// insert new session
+
 	return newSession, nil
 }
 
 func (UseCase *UserUseCase) GetUserByID(ctx context.Context, id string, dataSession UserSessionDomain) (UserDomain, error) {
-	// getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
-	// if err != nil {
-	// 	return UserDomain{}, err
-	// }
 	getUser, err := UseCase.userRepo.GetUserByID(ctx, id)
 	if err != nil {
 		return UserDomain{}, err
 	}
-	// if getUser.Username != getAuthorization.Username {
-	// 	return UserDomain{}, messages.ErrInvalidSession
-	// }
 
 	return getUser, nil
 }
@@ -99,17 +85,6 @@ func (UseCase *UserUseCase) GetUserByUsername(ctx context.Context, username stri
 }
 
 func (UseCase *UserUseCase) Follow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error {
-	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
-	if err != nil {
-		return err
-	}
-	getUser, err := UseCase.userRepo.GetUserByUsername(ctx, username)
-	if err != nil {
-		return err
-	}
-	if getUser.Username != getAuthorization.Username {
-		return messages.ErrInvalidSession
-	}
 	//update following
 	getUserProfile, err := UseCase.userRepo.UserProfileGetByUsername(ctx, username)
 	if err != nil {
@@ -149,17 +124,6 @@ func (UseCase *UserUseCase) Follow(ctx context.Context, username string, targetU
 }
 
 func (UseCase *UserUseCase) Unfollow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error {
-	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
-	if err != nil {
-		return err
-	}
-	getUser, err := UseCase.userRepo.GetUserByUsername(ctx, username)
-	if err != nil {
-		return err
-	}
-	if getUser.Username != getAuthorization.Username {
-		return messages.ErrInvalidSession
-	}
 	//update following
 	getUserProfile, err := UseCase.userRepo.UserProfileGetByUsername(ctx, username)
 	if err != nil {
@@ -198,14 +162,7 @@ func (UseCase *UserUseCase) Unfollow(ctx context.Context, username string, targe
 }
 
 func (UseCase *UserUseCase) UpdateUserProfile(ctx context.Context, dataSession UserSessionDomain, data UserProfileDomain) error {
-	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
-	if err != nil {
-		return err
-	}
-	if dataSession.Username != getAuthorization.Username {
-		return messages.ErrInvalidSession
-	}
-	errUpdate := UseCase.userRepo.UpdateUserProfile(ctx, getAuthorization.Username, data)
+	errUpdate := UseCase.userRepo.UpdateUserProfile(ctx, dataSession.Username, data)
 	if errUpdate != nil {
 		return errUpdate
 	}
@@ -213,14 +170,7 @@ func (UseCase *UserUseCase) UpdateUserProfile(ctx context.Context, dataSession U
 }
 
 func (UseCase *UserUseCase) UpdateUserInfo(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error {
-	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
-	if err != nil {
-		return err
-	}
-	if dataSession.Username != getAuthorization.Username {
-		return messages.ErrInvalidSession
-	}
-	errUpdate := UseCase.userRepo.UpdateUserInfo(ctx, getAuthorization.Username, data)
+	errUpdate := UseCase.userRepo.UpdateUserInfo(ctx, data.Username, data)
 	if errUpdate != nil {
 		return errUpdate
 	}
@@ -228,18 +178,11 @@ func (UseCase *UserUseCase) UpdateUserInfo(ctx context.Context, dataSession User
 }
 
 func (UseCase *UserUseCase) ChangePassword(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error {
-	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
-	if err != nil {
-		return err
-	}
-	if dataSession.Username != getAuthorization.Username {
-		return messages.ErrInvalidSession
-	}
 	encryptedPass, _ := encryption.HashPassword(data.Password)
 	updateData := UserDomain{
 		Password: encryptedPass,
 	}
-	errUpdate := UseCase.userRepo.UpdateUserInfo(ctx, getAuthorization.Username, updateData)
+	errUpdate := UseCase.userRepo.UpdateUserInfo(ctx, dataSession.Username, updateData)
 	if errUpdate != nil {
 		return errUpdate
 	}
