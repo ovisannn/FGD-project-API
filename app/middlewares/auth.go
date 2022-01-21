@@ -5,13 +5,15 @@ import (
 	"net/http"
 	"time"
 
+	"errors"
+
 	"github.com/golang-jwt/jwt"
 	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 type JwtClaims struct {
-	UserID string
+	UserID string `json:"UserID"`
 	jwt.StandardClaims
 }
 
@@ -42,4 +44,21 @@ func (jwtConf *ConfigJwt) GenerateToken(UserID string) (string, error) {
 	token, err := t.SignedString([]byte(jwtConf.Secret))
 
 	return token, err
+}
+
+func Auth(c echo.Context) error {
+	tokenString := c.Request().Header.Get("Authorization")
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if jwt.GetSigningMethod("HS256") != token.Method {
+			return nil, errors.New("Unexpected signing method: HS256")
+		}
+
+		return []byte("UhYiPkGrOuP10fGd"), nil
+	})
+
+	if token != nil && err == nil {
+		return controllers.NewSuccessResponse(c, "token authorized")
+	} else {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, errors.New("token unauthorized"))
+	}
 }

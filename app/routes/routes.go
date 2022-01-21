@@ -6,6 +6,10 @@ import (
 	"disspace/controllers/reports"
 	"disspace/controllers/threads"
 	"disspace/controllers/user"
+
+	// "disspace/controllers/user"
+
+	// "disspace/controllers/user"
 	"disspace/controllers/votes"
 
 	"github.com/labstack/echo/v4"
@@ -24,7 +28,7 @@ type ControllerList struct {
 
 func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute := e.Group("/v1")
-	// jwtAuth := middleware.JWTWithConfig(cl.JwtConfig)
+	jwtAuth := middleware.JWTWithConfig(ctrl.JWTConfig)
 
 	// Threads
 	baseRoute.GET("/threads", ctrl.ThreadController.GetAll)
@@ -63,7 +67,6 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	//moderators
 	//get moderators -> GET
 
-
 	// Comments
 	baseRoute.POST("/users/:id/comments", ctrl.CommentController.Create)
 	baseRoute.DELETE("/users/:id/comments/:thread_id", ctrl.CommentController.Delete)
@@ -75,4 +78,6 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	// Search (Users, Threads, Comments)
 	baseRoute.GET("/threads/search", ctrl.ThreadController.Search)
 	baseRoute.GET("/comments/search", ctrl.CommentController.Search)
+
+	baseRoute.POST("/test", ctrl.UserController.Test, jwtAuth)
 }

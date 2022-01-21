@@ -169,3 +169,20 @@ func (controller *UserController) Logout(c echo.Context) error {
 	}
 	return controllers.NewSuccessResponse(c, "successfully logout")
 }
+
+// type Payload struct {
+// 	Authorization string `header:Authorization`
+// }
+
+func (controller *UserController) Test(c echo.Context) error {
+	// ctx := c.Request().Context()
+	// h := c.Request().Header.Get("Authorization")
+	// a := middlewares.GetUserId(c)
+	// fmt.Println(a)
+	// fmt.Println(h)
+	// if err := c.Bind(&a); err != nil {
+	// 	return err
+	// }
+	// fmt.Println(a)
+	return controllers.NewSuccessResponse(c, "hello")
+}
