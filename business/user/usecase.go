@@ -47,7 +47,7 @@ func (UseCase *UserUseCase) Login(ctx context.Context, username string, password
 		return UserSessionDomain{}, err
 	}
 
-	userToken, errToken := UseCase.ConfigJwt.GenerateToken(result.ID)
+	userToken, errToken := UseCase.ConfigJwt.GenerateToken(result.Username)
 	if errToken != nil {
 		return UserSessionDomain{}, err
 	}
@@ -59,7 +59,7 @@ func (UseCase *UserUseCase) Login(ctx context.Context, username string, password
 	return newSession, nil
 }
 
-func (UseCase *UserUseCase) GetUserByID(ctx context.Context, id string, dataSession UserSessionDomain) (UserDomain, error) {
+func (UseCase *UserUseCase) GetUserByID(ctx context.Context, id string) (UserDomain, error) {
 	getUser, err := UseCase.userRepo.GetUserByID(ctx, id)
 	if err != nil {
 		return UserDomain{}, err
@@ -68,16 +68,13 @@ func (UseCase *UserUseCase) GetUserByID(ctx context.Context, id string, dataSess
 	return getUser, nil
 }
 
-func (UseCase *UserUseCase) GetUserByUsername(ctx context.Context, username string, dataSession UserSessionDomain) (UserDomain, error) {
-	getAuthorization, err := UseCase.userRepo.ConfirmAuthorization(ctx, dataSession)
-	if err != nil {
-		return UserDomain{}, err
-	}
+func (UseCase *UserUseCase) GetUserByUsername(ctx context.Context, username string) (UserDomain, error) {
+
 	getUser, err := UseCase.userRepo.GetUserByUsername(ctx, username)
 	if err != nil {
 		return UserDomain{}, err
 	}
-	if getUser.Username != getAuthorization.Username {
+	if getUser.Username != username {
 		return UserDomain{}, messages.ErrInvalidSession
 	}
 

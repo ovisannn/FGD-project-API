@@ -42,8 +42,8 @@ type LoginInfoDomain struct {
 type UseCase interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
 	UserProfileGetByUsername(ctx context.Context, username string) (UserProfileDomain, error)
-	GetUserByID(ctx context.Context, id string, dataSession UserSessionDomain) (UserDomain, error)
-	GetUserByUsername(ctx context.Context, username string, dataSession UserSessionDomain) (UserDomain, error)
+	GetUserByID(ctx context.Context, id string) (UserDomain, error)
+	GetUserByUsername(ctx context.Context, username string) (UserDomain, error)
 	Login(ctx context.Context, username string, password string) (UserSessionDomain, error)
 	Follow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error
 	Unfollow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error

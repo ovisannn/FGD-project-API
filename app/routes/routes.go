@@ -49,11 +49,11 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.PUT("/users/:id/votes/:ref_id", ctrl.VoteController.Update, jwtAuth)
 
 	//user
-	baseRoute.POST("/user/register", ctrl.UserController.Register)                           //aman ga perlu auth need test
-	baseRoute.GET("/userProfile/:username", ctrl.UserController.UserProfileGetByUsername)    //aman ga perlu auth need test
-	baseRoute.POST("/user/login", ctrl.UserController.Login)                                 //aman ga perlu auth need test
-	baseRoute.GET("/user/id/:id", ctrl.UserController.GetUserByID, jwtAuth)                  //aman need test
-	baseRoute.GET("/user/user/:username", ctrl.UserController.GetUserByUsername)             //rework
+	baseRoute.POST("/user/register", ctrl.UserController.Register)                           //ok
+	baseRoute.GET("/userProfile/:username", ctrl.UserController.UserProfileGetByUsername)    //ok
+	baseRoute.POST("/user/login", ctrl.UserController.Login)                                 //ok
+	baseRoute.GET("/user/id/:id", ctrl.UserController.GetUserByID, jwtAuth)                  //ok
+	baseRoute.GET("/user/username/:username", ctrl.UserController.GetUserByUsername)         //rework
 	baseRoute.PATCH("/user/follow/:usernameTarget", ctrl.UserController.Follow, jwtAuth)     //aman need test
 	baseRoute.PATCH("/user/unfollow/:usernameTarget", ctrl.UserController.Unfollow, jwtAuth) //aman need test
 	baseRoute.PATCH("/userProfile/", ctrl.UserController.UpdateUserProfile, jwtAuth)         //aman need test

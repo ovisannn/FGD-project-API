@@ -18,4 +18,5 @@ var (
 	ErrAlreadyLoggedIn      = errors.New("already logged in")
 	ErrUpdateFailed         = errors.New("update failed")
 	ErrUserAlreadyFollowed  = errors.New("user already followed")
+	ErrFailedClaimJWT       = errors.New("failed claiming jwt payload")
 )

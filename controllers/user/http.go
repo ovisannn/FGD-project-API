@@ -1,10 +1,13 @@
 package user
 
 import (
+	"disspace/app/middlewares"
 	"disspace/business/user"
 	"disspace/controllers"
 	"disspace/controllers/user/requests"
 	"disspace/controllers/user/responses"
+	"disspace/helpers/messages"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -57,10 +60,14 @@ func (controller *UserController) Login(c echo.Context) error {
 
 func (controller *UserController) GetUserByID(c echo.Context) error {
 	ctx := c.Request().Context()
-	dataSession := requests.UserSession{}
 	id := c.Param("id")
-	c.Bind(&dataSession)
-	result, err := controller.UserUseCase.GetUserByID(ctx, id, dataSession.SessionToDomain())
+	token := c.Request().Header.Get("Authorization")
+	payload, isOk := middlewares.ExtractClaims(token)
+	fmt.Println(payload["username"])
+	if !isOk {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, messages.ErrFailedClaimJWT)
+	}
+	result, err := controller.UserUseCase.GetUserByID(ctx, id)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
@@ -69,10 +76,10 @@ func (controller *UserController) GetUserByID(c echo.Context) error {
 
 func (controller *UserController) GetUserByUsername(c echo.Context) error {
 	ctx := c.Request().Context()
-	dataSession := requests.UserSession{}
+	// dataSession := requests.UserSession{}
 	id := c.Param("username")
-	c.Bind(&dataSession)
-	result, err := controller.UserUseCase.GetUserByUsername(ctx, id, dataSession.SessionToDomain())
+	// c.Bind(&dataSession)
+	result, err := controller.UserUseCase.GetUserByUsername(ctx, id)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
@@ -170,19 +177,8 @@ func (controller *UserController) Logout(c echo.Context) error {
 	return controllers.NewSuccessResponse(c, "successfully logout")
 }
 
-// type Payload struct {
-// 	Authorization string `header:Authorization`
-// }
-
 func (controller *UserController) Test(c echo.Context) error {
-	// ctx := c.Request().Context()
-	// h := c.Request().Header.Get("Authorization")
 	// a := middlewares.GetUserId(c)
-	// fmt.Println(a)
-	// fmt.Println(h)
-	// if err := c.Bind(&a); err != nil {
-	// 	return err
-	// }
-	// fmt.Println(a)
+	// fmt.Print(a)
 	return controllers.NewSuccessResponse(c, "hello")
 }

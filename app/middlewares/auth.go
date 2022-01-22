@@ -2,10 +2,10 @@ package middlewares
 
 import (
 	"disspace/controllers"
+	"log"
 	"net/http"
+	"strings"
 	"time"
-
-	"errors"
 
 	"github.com/golang-jwt/jwt"
 	echo "github.com/labstack/echo/v4"
@@ -13,7 +13,7 @@ import (
 )
 
 type JwtClaims struct {
-	UserID string `json:"UserID"`
+	Username string `json:"username" bson:"username"`
 	jwt.StandardClaims
 }
 
@@ -32,9 +32,9 @@ func (config *ConfigJwt) Init() middleware.JWTConfig {
 	}
 }
 
-func (jwtConf *ConfigJwt) GenerateToken(UserID string) (string, error) {
+func (jwtConf *ConfigJwt) GenerateToken(username string) (string, error) {
 	claims := JwtClaims{
-		UserID,
+		username,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(int64(jwtConf.ExpiresAt))).Unix(),
 		},
@@ -46,19 +46,30 @@ func (jwtConf *ConfigJwt) GenerateToken(UserID string) (string, error) {
 	return token, err
 }
 
-func Auth(c echo.Context) error {
-	tokenString := c.Request().Header.Get("Authorization")
+func ExtractClaims(tokenStr string) (jwt.MapClaims, bool) {
+	tokenString := strings.Replace(tokenStr, "bearer ", "", -1)
+	// fmt.Println(tokenString)
+	hmacSecretString := "UhYiPkGrOuP10fGd"
+	hmacSecret := []byte(hmacSecretString)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if jwt.GetSigningMethod("HS256") != token.Method {
-			return nil, errors.New("Unexpected signing method: HS256")
-		}
-
-		return []byte("UhYiPkGrOuP10fGd"), nil
+		// check token signing method etc
+		return hmacSecret, nil
 	})
 
-	if token != nil && err == nil {
-		return controllers.NewSuccessResponse(c, "token authorized")
-	} else {
-		return controllers.NewErrorResponse(c, http.StatusBadRequest, errors.New("token unauthorized"))
+	if err != nil {
+		return nil, false
 	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, true
+	} else {
+		log.Printf("Invalid JWT Token")
+		return nil, false
+	}
+}
+
+func GetUsername(c echo.Context) string {
+	user := c.Get("username").(*jwt.Token)
+	claims := user.Claims.(*JwtClaims)
+	return string(claims.Username)
 }
