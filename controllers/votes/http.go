@@ -3,6 +3,7 @@ package votes
 import (
 	"disspace/business/votes"
 	"disspace/controllers"
+	"disspace/controllers/votes/response"
 	"disspace/controllers/votes/request"
 	"disspace/helpers/messages"
 	"net/http"
@@ -55,5 +56,19 @@ func (controller *VoteController) Update(c echo.Context) error {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
 	return controllers.NewSuccessResponse(c, "successfully update vote")
+
+}
+
+func (controller *VoteController) GetIsVoted(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	username := c.Param("id")
+	refId := c.Param("ref_id")
+
+	result, err := controller.VoteUseCase.GetIsVoted(ctx, username, refId)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusNotFound, err)
+	}
+	return controllers.NewSuccessResponse(c, response.FromDomain(result))
 
 }

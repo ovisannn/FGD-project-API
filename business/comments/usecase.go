@@ -44,3 +44,11 @@ func (useCase *CommentUseCase) Search(ctx context.Context, q string, sort string
 	}
 	return result, nil
 }
+
+func (useCase *CommentUseCase) GetByID(ctx context.Context, id string) (Domain, error) {
+	result, err := useCase.commentRepo.GetByID(ctx, id)
+	if err != nil {
+		return Domain{}, messages.ErrDataNotFound
+	}
+	return result, nil
+}

@@ -110,3 +110,19 @@ func (repository *MongoDBCommentRepository) Search(ctx context.Context, q string
 	}
 	return result, nil
 }
+
+func (repository *MongoDBCommentRepository) GetByID(ctx context.Context, id string) (comments.Domain, error) {
+	result := Comment{}
+
+	conv, errConvId := primitive.ObjectIDFromHex(id)
+	if errConvId != nil {
+		return comments.Domain{}, messages.ErrInvalidUserID
+	}
+	var filter = bson.D{{Key: "_id", Value: conv}}
+	err := repository.Conn.Collection("comments").FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return comments.Domain{}, err
+	}
+
+	return result.ToDomain(), nil
+}

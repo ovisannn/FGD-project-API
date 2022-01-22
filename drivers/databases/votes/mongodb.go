@@ -24,10 +24,10 @@ func (repository *MongoDBVoteRepository) Store(ctx context.Context, voteDomain *
 	// Start Error Handling
 
 	// Check User ID and Reference ID validity
-	_, errConvId := primitive.ObjectIDFromHex(id)
-	if errConvId != nil {
-		return messages.ErrInvalidUserID
-	}
+	// _, errConvId := primitive.ObjectIDFromHex(id)
+	// if errConvId != nil {
+	// 	return messages.ErrInvalidUserID
+	// }
 
 	_, errConvRefId := primitive.ObjectIDFromHex(voteDomain.ReferenceID)
 	if errConvRefId != nil {
@@ -73,12 +73,12 @@ func (repository *MongoDBVoteRepository) Store(ctx context.Context, voteDomain *
 
 func (repository *MongoDBVoteRepository) Update(ctx context.Context, status int, id string, refid string) error {
 	// Start Error Handling
-	
+
 	// Check User ID and Reference ID validity
-	_, errConvId := primitive.ObjectIDFromHex(id)
-	if errConvId != nil {
-		return messages.ErrInvalidUserID
-	}
+	// _, errConvId := primitive.ObjectIDFromHex(id)
+	// if errConvId != nil {
+	// 	return messages.ErrInvalidUserID
+	// }
 
 	_, errConvRefId := primitive.ObjectIDFromHex(refid)
 	if errConvRefId != nil {
@@ -102,4 +102,19 @@ func (repository *MongoDBVoteRepository) Update(ctx context.Context, status int,
 		return messages.ErrDataNotFound
 	}
 	return nil
+}
+
+func (repository *MongoDBVoteRepository) GetIsVoted(ctx context.Context, username string, refId string) (votes.Domain, error) {
+	result := Vote{}
+
+	var filter = bson.D{{Key: "$and", Value: []interface{}{
+		bson.D{{Key: "username", Value: username}},
+		bson.D{{Key: "reference_id", Value: refId}},
+	}}}
+	err := repository.Conn.Collection("votes").FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return votes.Domain{}, err
+	}
+
+	return result.ToDomain(), nil
 }

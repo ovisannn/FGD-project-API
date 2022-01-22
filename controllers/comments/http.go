@@ -72,3 +72,15 @@ func (controller *CommentController) Search(c echo.Context) error {
 	}
 	return controllers.NewSuccessResponse(c, comments)
 }
+
+func (controller *CommentController) GetByID(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	id := c.Param("id")
+
+	result, err := controller.CommentUseCase.GetByID(ctx, id)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusNotFound, err)
+	}
+	return controllers.NewSuccessResponse(c, response.FromDomain(result))
+}

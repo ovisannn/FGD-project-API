@@ -2,6 +2,7 @@ package votes
 
 import (
 	"context"
+	"disspace/helpers/messages"
 	// "disspace/helpers/messages"
 	"time"
 )
@@ -34,3 +35,10 @@ func (useCase *VoteUseCase) Update(ctx context.Context, status int, id string, r
 	return nil
 }
 
+func (useCase *VoteUseCase) GetIsVoted(ctx context.Context, username string, refId string) (Domain, error) {
+	result, err := useCase.voteRepo.GetIsVoted(ctx, username, refId)
+	if err != nil {
+		return Domain{}, messages.ErrDataNotFound
+	}
+	return result, nil
+}

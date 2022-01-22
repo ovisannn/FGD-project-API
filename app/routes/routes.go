@@ -43,6 +43,7 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	// Votes
 	baseRoute.POST("/users/:id/votes", ctrl.VoteController.Store)
 	baseRoute.PUT("/users/:id/votes/:ref_id", ctrl.VoteController.Update)
+	baseRoute.GET("/users/:id/votes/:ref_id", ctrl.VoteController.GetIsVoted)
 
 	//user
 	baseRoute.POST("/user/register", ctrl.UserController.Register)
@@ -63,10 +64,10 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	//moderators
 	//get moderators -> GET
 
-
 	// Comments
 	baseRoute.POST("/users/:id/comments", ctrl.CommentController.Create)
 	baseRoute.DELETE("/users/:id/comments/:thread_id", ctrl.CommentController.Delete)
+	baseRoute.GET("/comment/:id", ctrl.CommentController.GetByID)
 
 	// Reports (User, Thread, Comment)
 	baseRoute.PUT("/users/:id/reporting", ctrl.ReportController.Create)
