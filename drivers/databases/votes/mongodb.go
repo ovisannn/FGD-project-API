@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoDBVoteRepository struct {
@@ -86,13 +87,14 @@ func (repository *MongoDBVoteRepository) Update(ctx context.Context, status int,
 	}
 
 	// End Error Handling
+	opts := options.Update().SetUpsert(true)
 
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "status", Value: status}}}}
 	filter := bson.D{{Key: "$and", Value: []interface{}{
-		bson.D{{Key: "user_id", Value: id}}, bson.D{{Key: "reference_id", Value: refid}},
+		bson.D{{Key: "username", Value: id}}, bson.D{{Key: "reference_id", Value: refid}},
 	}}}
 
-	result, err := repository.Conn.Collection("votes").UpdateOne(ctx, filter, update)
+	result, err := repository.Conn.Collection("votes").UpdateOne(ctx, filter, update, opts)
 	if err != nil {
 		return err
 	}
