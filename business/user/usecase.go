@@ -59,34 +59,42 @@ func (UseCase *UserUseCase) Login(ctx context.Context, username string, password
 	return newSession, nil
 }
 
-func (UseCase *UserUseCase) GetUserByID(ctx context.Context, id string) (UserDomain, error) {
+func (UseCase *UserUseCase) GetUserByID(ctx context.Context, id string, usernamePayload string) (UserDomain, error) {
 	getUser, err := UseCase.userRepo.GetUserByID(ctx, id)
 	if err != nil {
 		return UserDomain{}, err
+	}
+	if getUser.Username != usernamePayload {
+		return UserDomain{}, messages.ErrUnauthorizedUser
 	}
 
 	return getUser, nil
 }
 
-func (UseCase *UserUseCase) GetUserByUsername(ctx context.Context, username string) (UserDomain, error) {
+func (UseCase *UserUseCase) GetUserByUsername(ctx context.Context, username string, usernamePayload string) (UserDomain, error) {
 
 	getUser, err := UseCase.userRepo.GetUserByUsername(ctx, username)
 	if err != nil {
 		return UserDomain{}, err
 	}
-	if getUser.Username != username {
-		return UserDomain{}, messages.ErrInvalidSession
+	if getUser.Username != usernamePayload {
+		return UserDomain{}, messages.ErrUnauthorizedUser
 	}
 
 	return getUser, nil
 }
 
-func (UseCase *UserUseCase) Follow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error {
+func (UseCase *UserUseCase) Follow(ctx context.Context, username string, targetUsername string) error {
 	//update following
 	getUserProfile, err := UseCase.userRepo.UserProfileGetByUsername(ctx, username)
 	if err != nil {
 		return err
 	}
+	getTargetProfile, err := UseCase.userRepo.UserProfileGetByUsername(ctx, targetUsername)
+	if err != nil {
+		return err
+	}
+
 	for _, item := range getUserProfile.Following {
 		if targetUsername == item {
 			return messages.ErrUserAlreadyFollowed
@@ -103,10 +111,6 @@ func (UseCase *UserUseCase) Follow(ctx context.Context, username string, targetU
 	}
 
 	//update followers
-	getTargetProfile, err := UseCase.userRepo.UserProfileGetByUsername(ctx, targetUsername)
-	if err != nil {
-		return err
-	}
 	existingFollowers := getTargetProfile.Followers
 	existingFollowers = append(existingFollowers, username)
 	updateDataTarget := UserProfileDomain{
@@ -120,9 +124,13 @@ func (UseCase *UserUseCase) Follow(ctx context.Context, username string, targetU
 	return nil
 }
 
-func (UseCase *UserUseCase) Unfollow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error {
+func (UseCase *UserUseCase) Unfollow(ctx context.Context, username string, targetUsername string) error {
 	//update following
 	getUserProfile, err := UseCase.userRepo.UserProfileGetByUsername(ctx, username)
+	if err != nil {
+		return err
+	}
+	getTargetProfile, err := UseCase.userRepo.UserProfileGetByUsername(ctx, targetUsername)
 	if err != nil {
 		return err
 	}
@@ -139,10 +147,6 @@ func (UseCase *UserUseCase) Unfollow(ctx context.Context, username string, targe
 	}
 
 	//update followers
-	getTargetProfile, err := UseCase.userRepo.UserProfileGetByUsername(ctx, targetUsername)
-	if err != nil {
-		return err
-	}
 	deleteFollowers, errdeleteFollowers := reslicing.DeleteItemFromSlice(getTargetProfile.Followers, username)
 	if errdeleteFollowers != nil {
 		return errdeleteFollowers
@@ -158,28 +162,28 @@ func (UseCase *UserUseCase) Unfollow(ctx context.Context, username string, targe
 	return nil
 }
 
-func (UseCase *UserUseCase) UpdateUserProfile(ctx context.Context, dataSession UserSessionDomain, data UserProfileDomain) error {
-	errUpdate := UseCase.userRepo.UpdateUserProfile(ctx, dataSession.Username, data)
+func (UseCase *UserUseCase) UpdateUserProfile(ctx context.Context, username string, data UserProfileDomain) error {
+	errUpdate := UseCase.userRepo.UpdateUserProfile(ctx, username, data)
 	if errUpdate != nil {
 		return errUpdate
 	}
 	return nil
 }
 
-func (UseCase *UserUseCase) UpdateUserInfo(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error {
-	errUpdate := UseCase.userRepo.UpdateUserInfo(ctx, data.Username, data)
+func (UseCase *UserUseCase) UpdateUserInfo(ctx context.Context, username string, data UserDomain) error {
+	errUpdate := UseCase.userRepo.UpdateUserInfo(ctx, username, data)
 	if errUpdate != nil {
 		return errUpdate
 	}
 	return nil
 }
 
-func (UseCase *UserUseCase) ChangePassword(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error {
+func (UseCase *UserUseCase) ChangePassword(ctx context.Context, username string, data UserDomain) error {
 	encryptedPass, _ := encryption.HashPassword(data.Password)
 	updateData := UserDomain{
 		Password: encryptedPass,
 	}
-	errUpdate := UseCase.userRepo.UpdateUserInfo(ctx, dataSession.Username, updateData)
+	errUpdate := UseCase.userRepo.UpdateUserInfo(ctx, username, updateData)
 	if errUpdate != nil {
 		return errUpdate
 	}

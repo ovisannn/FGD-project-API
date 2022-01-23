@@ -42,14 +42,14 @@ type LoginInfoDomain struct {
 type UseCase interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
 	UserProfileGetByUsername(ctx context.Context, username string) (UserProfileDomain, error)
-	GetUserByID(ctx context.Context, id string) (UserDomain, error)
-	GetUserByUsername(ctx context.Context, username string) (UserDomain, error)
+	GetUserByID(ctx context.Context, id string, usernamePayload string) (UserDomain, error)
+	GetUserByUsername(ctx context.Context, username string, usernamePayload string) (UserDomain, error)
 	Login(ctx context.Context, username string, password string) (UserSessionDomain, error)
-	Follow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error
-	Unfollow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error
-	UpdateUserProfile(ctx context.Context, dataSession UserSessionDomain, data UserProfileDomain) error
-	UpdateUserInfo(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error
-	ChangePassword(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error
+	Follow(ctx context.Context, username string, targetUsername string) error
+	Unfollow(ctx context.Context, username string, targetUsername string) error
+	UpdateUserProfile(ctx context.Context, username string, data UserProfileDomain) error
+	UpdateUserInfo(ctx context.Context, username string, data UserDomain) error
+	ChangePassword(ctx context.Context, username string, data UserDomain) error
 	Logout(ctx context.Context, dataSession UserSessionDomain) error
 }
 

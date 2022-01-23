@@ -7,7 +7,6 @@ import (
 	"disspace/controllers/user/requests"
 	"disspace/controllers/user/responses"
 	"disspace/helpers/messages"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -61,13 +60,15 @@ func (controller *UserController) Login(c echo.Context) error {
 func (controller *UserController) GetUserByID(c echo.Context) error {
 	ctx := c.Request().Context()
 	id := c.Param("id")
+	//getting jwt payload
 	token := c.Request().Header.Get("Authorization")
 	payload, isOk := middlewares.ExtractClaims(token)
-	fmt.Println(payload["username"])
 	if !isOk {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, messages.ErrFailedClaimJWT)
 	}
-	result, err := controller.UserUseCase.GetUserByID(ctx, id)
+	var username string = payload["username"].(string)
+	//going down to usecase
+	result, err := controller.UserUseCase.GetUserByID(ctx, id, username)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
@@ -76,10 +77,16 @@ func (controller *UserController) GetUserByID(c echo.Context) error {
 
 func (controller *UserController) GetUserByUsername(c echo.Context) error {
 	ctx := c.Request().Context()
-	// dataSession := requests.UserSession{}
 	id := c.Param("username")
-	// c.Bind(&dataSession)
-	result, err := controller.UserUseCase.GetUserByUsername(ctx, id)
+	//getting jwt payload
+	token := c.Request().Header.Get("Authorization")
+	payload, isOk := middlewares.ExtractClaims(token)
+	if !isOk {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, messages.ErrFailedClaimJWT)
+	}
+	var username string = payload["username"].(string)
+	//going down to usecase
+	result, err := controller.UserUseCase.GetUserByUsername(ctx, id, username)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
@@ -88,13 +95,15 @@ func (controller *UserController) GetUserByUsername(c echo.Context) error {
 
 func (controller *UserController) Follow(c echo.Context) error {
 	ctx := c.Request().Context()
-	dataSession := requests.UserSession{}
-	c.Bind(&dataSession)
-
-	username := c.Param("username")
 	usernameTarget := c.Param("usernameTarget")
+	token := c.Request().Header.Get("Authorization")
+	payload, isOk := middlewares.ExtractClaims(token)
+	if !isOk {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, messages.ErrFailedClaimJWT)
+	}
+	var username string = payload["username"].(string)
 
-	err := controller.UserUseCase.Follow(ctx, username, usernameTarget, dataSession.SessionToDomain())
+	err := controller.UserUseCase.Follow(ctx, username, usernameTarget)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
@@ -103,13 +112,14 @@ func (controller *UserController) Follow(c echo.Context) error {
 
 func (controller *UserController) Unfollow(c echo.Context) error {
 	ctx := c.Request().Context()
-	dataSession := requests.UserSession{}
-	c.Bind(&dataSession)
-
-	username := c.Param("username")
 	usernameTarget := c.Param("usernameTarget")
-
-	err := controller.UserUseCase.Unfollow(ctx, username, usernameTarget, dataSession.SessionToDomain())
+	token := c.Request().Header.Get("Authorization")
+	payload, isOk := middlewares.ExtractClaims(token)
+	if !isOk {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, messages.ErrFailedClaimJWT)
+	}
+	var username string = payload["username"].(string)
+	err := controller.UserUseCase.Unfollow(ctx, username, usernameTarget)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
@@ -120,13 +130,14 @@ func (controller *UserController) UpdateUserProfile(c echo.Context) error {
 	ctx := c.Request().Context()
 	dataUserProfile := requests.UserProfile{}
 	c.Bind(&dataUserProfile)
-
-	dataSession := requests.UserSession{
-		Token:    c.Param("token"),
-		Username: c.Param("username"),
+	token := c.Request().Header.Get("Authorization")
+	payload, isOk := middlewares.ExtractClaims(token)
+	if !isOk {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, messages.ErrFailedClaimJWT)
 	}
+	var username string = payload["username"].(string)
 
-	err := controller.UserUseCase.UpdateUserProfile(ctx, dataSession.SessionToDomain(), user.UserProfileDomain(dataUserProfile))
+	err := controller.UserUseCase.UpdateUserProfile(ctx, username, user.UserProfileDomain(dataUserProfile))
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
@@ -137,12 +148,13 @@ func (controller *UserController) ChangePassword(c echo.Context) error {
 	ctx := c.Request().Context()
 	dataUser := requests.User{}
 	c.Bind(&dataUser)
-
-	dataSession := requests.UserSession{
-		Token:    c.Param("token"),
-		Username: c.Param("username"),
+	token := c.Request().Header.Get("Authorization")
+	payload, isOk := middlewares.ExtractClaims(token)
+	if !isOk {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, messages.ErrFailedClaimJWT)
 	}
-	err := controller.UserUseCase.ChangePassword(ctx, dataSession.SessionToDomain(), *dataUser.UserInfoUpdateToDomain())
+	var username string = payload["username"].(string)
+	err := controller.UserUseCase.ChangePassword(ctx, username, *dataUser.UserInfoUpdateToDomain())
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
@@ -153,11 +165,13 @@ func (controller *UserController) UpdateUserInfo(c echo.Context) error {
 	ctx := c.Request().Context()
 	dataUserInfo := requests.User{}
 	c.Bind(&dataUserInfo)
-	dataSession := requests.UserSession{
-		Token:    c.Param("token"),
-		Username: c.Param("username"),
+	token := c.Request().Header.Get("Authorization")
+	payload, isOk := middlewares.ExtractClaims(token)
+	if !isOk {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, messages.ErrFailedClaimJWT)
 	}
-	err := controller.UserUseCase.UpdateUserInfo(ctx, dataSession.SessionToDomain(), *dataUserInfo.UserInfoUpdateToDomain())
+	var username string = payload["username"].(string)
+	err := controller.UserUseCase.UpdateUserInfo(ctx, username, *dataUserInfo.UserInfoUpdateToDomain())
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
