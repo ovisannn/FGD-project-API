@@ -191,6 +191,20 @@ func (controller *UserController) Logout(c echo.Context) error {
 	return controllers.NewSuccessResponse(c, "successfully logout")
 }
 
+func (controller *UserController) GetModeratorsByCategoryID(c echo.Context) error {
+	moderators := []responses.UserProfile{}
+	ctx := c.Request().Context()
+	categoryID := c.Param("categoryID")
+	result, err := controller.UserUseCase.GetModerators(ctx, categoryID)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	for _, i := range result {
+		moderators = append(moderators, responses.UserProfileFromDomain(i))
+	}
+	return controllers.NewSuccessResponse(c, moderators)
+}
+
 func (controller *UserController) Test(c echo.Context) error {
 	// a := middlewares.GetUserId(c)
 	// fmt.Print(a)

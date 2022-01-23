@@ -51,6 +51,7 @@ type UseCase interface {
 	UpdateUserInfo(ctx context.Context, username string, data UserDomain) error
 	ChangePassword(ctx context.Context, username string, data UserDomain) error
 	Logout(ctx context.Context, dataSession UserSessionDomain) error
+	GetModerators(ctx context.Context, idCategory string) ([]UserProfileDomain, error)
 }
 
 type Repository interface {
@@ -61,6 +62,8 @@ type Repository interface {
 	Login(ctx context.Context, username string, password string) (UserDomain, error)
 	UpdateUserProfile(ctx context.Context, username string, data UserProfileDomain) error
 	UpdateUserInfo(ctx context.Context, username string, data UserDomain) error
+	// GetAllUser(ctx context.Context) []UserDomain
+	GetModerators(ctx context.Context, idCategory string) ([]UserProfileDomain, error)
 
 	CheckingSession(ctx context.Context, username string) error
 	InsertSession(ctx context.Context, dataSession UserSessionDomain) error

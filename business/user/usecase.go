@@ -204,3 +204,11 @@ func (UseCase *UserUseCase) Logout(ctx context.Context, dataSession UserSessionD
 	}
 	return nil
 }
+
+func (UseCase *UserUseCase) GetModerators(ctx context.Context, idCategory string) ([]UserProfileDomain, error) {
+	result, err := UseCase.GetModerators(ctx, idCategory)
+	if err != nil {
+		return []UserProfileDomain{}, err
+	}
+	return result, nil
+}
