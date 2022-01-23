@@ -7,9 +7,6 @@ import (
 	"disspace/controllers/threads"
 	"disspace/controllers/user"
 
-	// "disspace/controllers/user"
-
-	// "disspace/controllers/user"
 	"disspace/controllers/votes"
 
 	"github.com/labstack/echo/v4"
