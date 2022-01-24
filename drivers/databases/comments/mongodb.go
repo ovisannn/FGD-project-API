@@ -4,6 +4,7 @@ import (
 	"context"
 	"disspace/business/comments"
 	"disspace/helpers/messages"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -23,10 +24,10 @@ func NewMongoDBCommentRepository(conn *mongo.Database) comments.Repository {
 
 func (repository *MongoDBCommentRepository) Create(ctx context.Context, commentDomain *comments.Domain, id string) (comments.Domain, error) {
 	// Start Error Handling
-	_, errConvId := primitive.ObjectIDFromHex(id)
-	if errConvId != nil {
-		return comments.Domain{}, messages.ErrInvalidUserID
-	}
+	// _, errConvId := primitive.ObjectIDFromHex(id)
+	// if errConvId != nil {
+	// 	return comments.Domain{}, messages.ErrInvalidUserID
+	// }
 
 	// // Filter
 	// filter := bson.D{{Key: "_id", Value: convId}}
@@ -97,7 +98,7 @@ func (repository *MongoDBCommentRepository) Search(ctx context.Context, q string
 	// Search
 	filter := bson.D{}
 	if q != "" {
-		filter = bson.D{{Key: "$text", Value: bson.D{{Key: "$search", Value: q}}}}
+		filter = bson.D{{Key: "username", Value: primitive.Regex{Pattern: q, Options: "i"}}}
 	}
 
 	cursor, err := repository.Conn.Collection("comments").Find(ctx, filter, opts)
@@ -108,5 +109,61 @@ func (repository *MongoDBCommentRepository) Search(ctx context.Context, q string
 	if err = cursor.All(ctx, &result); err != nil {
 		return []comments.Domain{}, err
 	}
+	return result, nil
+}
+
+func (repository *MongoDBCommentRepository) GetByID(ctx context.Context, id string) (comments.Domain, error) {
+	result := Comment{}
+
+	conv, errConvId := primitive.ObjectIDFromHex(id)
+	if errConvId != nil {
+		return comments.Domain{}, messages.ErrInvalidUserID
+	}
+	var filter = bson.D{{Key: "_id", Value: conv}}
+	err := repository.Conn.Collection("comments").FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return comments.Domain{}, err
+	}
+
+	return result.ToDomain(), nil
+}
+
+func (repository *MongoDBCommentRepository) GetAllInThread(ctx context.Context, threadId string, parentId string) ([]comments.Domain, error) {
+	result := []comments.Domain{}
+
+	filter := bson.D{{Key: "$and", Value: []interface{}{
+		bson.D{{Key: "thread_id", Value: threadId}}, bson.D{{Key: "parent_id", Value: parentId}},
+	}}}
+
+	var userLookup = bson.M{
+		"from":         "user_profile",
+		"localField":   "username",
+		"foreignField": "username",
+		"as":           "user",
+	}
+
+	fmt.Println(threadId, parentId)
+
+	query := []bson.M{
+		{
+			"$match": filter,
+		},
+		{
+			"$lookup": userLookup,
+		},
+		{
+			"$unwind": "$user",
+		},
+	}
+
+	cursor, err := repository.Conn.Collection("comments").Aggregate(ctx, query)
+	if err != nil {
+		return []comments.Domain{}, err
+	}
+
+	if err = cursor.All(ctx, &result); err != nil {
+		return []comments.Domain{}, err
+	}
+
 	return result, nil
 }

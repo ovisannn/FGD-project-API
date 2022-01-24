@@ -3,21 +3,25 @@ package threads
 import (
 	"context"
 	"disspace/business/comments"
+	"disspace/business/user"
+	"disspace/business/votes"
 	"time"
 )
 
 type Domain struct {
-	ID          string            `bson:"_id,omitempty"`
-	UserID      string            `bson:"user_id"`
-	CategoryID  string            `bson:"category_id"`
-	Title       string            `bson:"title"`
-	Content     string            `bson:"content"`
-	ImageUrl    string            `bson:"image_url"`
-	NumVotes    int               `bson:"num_votes,omitempty"`
-	NumComments int               `bson:"num_comments,omitempty"`
-	Comments    []comments.Domain `bson:"comments,omitempty"`
-	CreatedAt   time.Time         `bson:"created_at"`
-	UpdatedAt   time.Time         `bson:"updated_at"`
+	ID          string                 `bson:"_id,omitempty"`
+	UserID      string                 `bson:"user_id"`
+	User        user.UserProfileDomain `bson:"user"`
+	CategoryID  string                 `bson:"category_id"`
+	Title       string                 `bson:"title"`
+	Content     string                 `bson:"content"`
+	ImageUrl    string                 `bson:"image_url"`
+	NumVotes    int                    `bson:"num_votes,omitempty"`
+	NumComments int                    `bson:"num_comments,omitempty"`
+	Votes       []votes.Domain         `bson:"votes,omitempty"`
+	Comments    []comments.Domain      `bson:"comments,omitempty"`
+	CreatedAt   time.Time              `bson:"created_at"`
+	UpdatedAt   time.Time              `bson:"updated_at"`
 }
 
 type UseCase interface {

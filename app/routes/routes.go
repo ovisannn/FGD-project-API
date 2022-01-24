@@ -46,6 +46,7 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	// Votes
 	baseRoute.POST("/users/:id/votes", ctrl.VoteController.Store, jwtAuth)
 	baseRoute.PUT("/users/:id/votes/:ref_id", ctrl.VoteController.Update, jwtAuth)
+	baseRoute.GET("/users/:id/votes/:ref_id", ctrl.VoteController.GetIsVoted)
 
 	//user
 	baseRoute.POST("/user/register", ctrl.UserController.Register)
@@ -63,20 +64,25 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	//leaderboard
 	baseRoute.GET("/TopUser", ctrl.UserController.GetTop5User)
 
-	//moderators
+  //moderators
 	baseRoute.GET("/moderators/:categoryID", ctrl.ModeratorsController.GetByCategoryID)
 
 	// Comments
 	baseRoute.POST("/users/:id/comments", ctrl.CommentController.Create, jwtAuth)
 	baseRoute.DELETE("/users/:id/comments/:thread_id", ctrl.CommentController.Delete, jwtAuth)
+	baseRoute.GET("/comment/:id", ctrl.CommentController.GetByID)
+	baseRoute.GET("/threads/:thread_id/comment/:parent_id", ctrl.CommentController.GetAllInThread)
 
 	// Reports (User, Thread, Comment)
 	baseRoute.PUT("/users/:id/reporting", ctrl.ReportController.Create, jwtAuth)
 	baseRoute.GET("/reports", ctrl.ReportController.GetAll)
+	baseRoute.GET("/reports/users", ctrl.ReportController.GetUserReport)
+	baseRoute.GET("/reports/comments", ctrl.ReportController.GetCommentReport)
 
 	// Search (Users, Threads, Comments)
 	baseRoute.GET("/threads/search", ctrl.ThreadController.Search)
 	baseRoute.GET("/comments/search", ctrl.CommentController.Search)
+	baseRoute.GET("/users/search", ctrl.UserController.Search)
 
 	baseRoute.GET("/test", ctrl.UserController.Test, jwtAuth)
 }

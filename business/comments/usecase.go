@@ -44,3 +44,19 @@ func (useCase *CommentUseCase) Search(ctx context.Context, q string, sort string
 	}
 	return result, nil
 }
+
+func (useCase *CommentUseCase) GetByID(ctx context.Context, id string) (Domain, error) {
+	result, err := useCase.commentRepo.GetByID(ctx, id)
+	if err != nil {
+		return Domain{}, messages.ErrDataNotFound
+	}
+	return result, nil
+}
+
+func (useCase *CommentUseCase) GetAllInThread(ctx context.Context, threadId string, parentId string) ([]Domain, error) {
+	result, err := useCase.commentRepo.GetAllInThread(ctx, threadId, parentId)
+	if err != nil {
+		return []Domain{}, err
+	}
+	return result, nil
+}

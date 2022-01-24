@@ -72,3 +72,32 @@ func (controller *CommentController) Search(c echo.Context) error {
 	}
 	return controllers.NewSuccessResponse(c, comments)
 }
+
+func (controller *CommentController) GetByID(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	id := c.Param("id")
+
+	result, err := controller.CommentUseCase.GetByID(ctx, id)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusNotFound, err)
+	}
+	return controllers.NewSuccessResponse(c, response.FromDomain(result))
+}
+
+func (controller *CommentController) GetAllInThread(c echo.Context) error {
+	comments := []response.CommentResponse{}
+	threadId := c.Param("thread_id")
+	parentId := c.Param("parent_id")
+	ctx := c.Request().Context()
+
+	result, err := controller.CommentUseCase.GetAllInThread(ctx, threadId, parentId)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusNotFound, err)
+	}
+	for _, item := range result {
+		comments = append(comments, response.FromDomain(item))
+	}
+
+	return controllers.NewSuccessResponse(c, comments)
+}

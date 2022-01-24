@@ -57,3 +57,35 @@ func (controller *ReportController) GetAll(c echo.Context) error {
 	return controllers.NewSuccessResponse(c, reports)
 
 }
+
+func (controller *ReportController) GetUserReport(c echo.Context) error {
+	reports := []response.ReportResponse{}
+	sorting := c.QueryParam("sort")
+	query := c.QueryParam("q")
+	ctx := c.Request().Context()
+
+	result, err := controller.ReportUseCase.GetUserReport(ctx, sorting, query)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusNotFound, err)
+	}
+	for _, item := range result {
+		reports = append(reports, response.FromDomain(item))
+	}
+	return controllers.NewSuccessResponse(c, reports)
+}
+
+func (controller *ReportController) GetCommentReport(c echo.Context) error {
+	reports := []response.ReportResponse{}
+	sorting := c.QueryParam("sort")
+	query := c.QueryParam("q")
+	ctx := c.Request().Context()
+
+	result, err := controller.ReportUseCase.GetCommentReport(ctx, sorting, query)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusNotFound, err)
+	}
+	for _, item := range result {
+		reports = append(reports, response.FromDomain(item))
+	}
+	return controllers.NewSuccessResponse(c, reports)
+}

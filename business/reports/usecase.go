@@ -32,3 +32,19 @@ func (useCase *ReportUseCase) GetAll(ctx context.Context, sort string) ([]Domain
 	}
 	return result, nil
 }
+
+func (useCase *ReportUseCase) GetUserReport(ctx context.Context, sort string, q string) ([]Domain, error) {
+	result, err := useCase.reportRepo.GetUserReport(ctx, sort, q)
+	if err != nil {
+		return []Domain{}, err
+	}
+	return result, nil
+}
+
+func (useCase *ReportUseCase) GetCommentReport(ctx context.Context, sort string, q string) ([]Domain, error) {
+	result, err := useCase.reportRepo.GetCommentReport(ctx, sort, q)
+	if err != nil {
+		return []Domain{}, err
+	}
+	return result, nil
+}

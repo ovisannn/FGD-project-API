@@ -33,6 +33,13 @@ var commentLookup = bson.M{
 	"as":           "comments",
 }
 
+var userLookup = bson.M{
+	"from":         "user_profile",
+	"localField":   "user_id",
+	"foreignField": "username",
+	"as":           "user",
+}
+
 func (repository *MongoDBThreadRepository) GetAll(ctx context.Context, sort string) ([]threads.Domain, error) {
 	var result []threads.Domain
 
@@ -49,10 +56,16 @@ func (repository *MongoDBThreadRepository) GetAll(ctx context.Context, sort stri
 			"$addFields": convIdToString,
 		},
 		{
+			"$lookup": userLookup,
+		},
+		{
 			"$lookup": votesLookup,
 		},
 		{
 			"$lookup": commentLookup,
+		},
+		{
+			"$unwind": "$user",
 		},
 		{
 			"$addFields": countVotes,
@@ -123,10 +136,16 @@ func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id strin
 			"$addFields": convIdToString,
 		},
 		{
+			"$lookup": userLookup,
+		},
+		{
 			"$lookup": votesLookup,
 		},
 		{
 			"$lookup": commentLookup,
+		},
+		{
+			"$unwind": "$user",
 		},
 		{
 			"$addFields": countVotes,
@@ -184,16 +203,26 @@ func (repository *MongoDBThreadRepository) Search(ctx context.Context, q string,
 		sort = "created_at"
 	}
 	sorting := bson.M{sort: -1}
+	title := bson.M{"title": primitive.Regex{Pattern: q, Options: "i"}}
 
 	query := []bson.M{
 		{
+			"$match": title,
+		},
+		{
 			"$addFields": convIdToString,
+		},
+		{
+			"$lookup": userLookup,
 		},
 		{
 			"$lookup": votesLookup,
 		},
 		{
 			"$lookup": commentLookup,
+		},
+		{
+			"$unwind": "$user",
 		},
 		{
 			"$addFields": countVotes,
@@ -204,14 +233,6 @@ func (repository *MongoDBThreadRepository) Search(ctx context.Context, q string,
 		{
 			"$sort": sorting,
 		},
-	}
-
-	if q != "" {
-		query = append(query, bson.M{})
-		copy(query[1:], query[0:])
-		query[0] = bson.M{
-			"$match": bson.M{"$text": bson.M{"$search": q}},
-		}
 	}
 
 	cursor, err := repository.Conn.Collection("threads").Aggregate(ctx, query)

@@ -7,7 +7,7 @@ import (
 
 type VoteReponse struct {
 	ID          string    `json:"_id"`
-	UserID      string    `json:"user_id,omitempty"`
+	Username      string    `json:"username,omitempty"`
 	ReferenceID string    `json:"reference_id,omitempty"`
 	Status      int       `json:"status,omitempty"`
 	TimeLike    time.Time `json:"time_like,omitempty"`
@@ -16,7 +16,7 @@ type VoteReponse struct {
 func FromDomain(domain votes.Domain) VoteReponse {
 	return VoteReponse{
 		ID:          domain.ID,
-		UserID:      domain.UserID,
+		Username:      domain.Username,
 		ReferenceID: domain.ReferenceID,
 		Status:      domain.Status,
 		TimeLike:    domain.TimeLike,
