@@ -1,4 +1,4 @@
- package threads
+package threads
 
 import (
 	"disspace/business/threads"
@@ -101,5 +101,21 @@ func (controller *ThreadController) Search(c echo.Context) error {
 	for _, item := range result {
 		threads = append(threads, responses.FromDomain(item))
 	}
+	return controllers.NewSuccessResponse(c, threads)
+}
+
+func (controller *ThreadController) GetByCategoryID(c echo.Context) error {
+	threads := []responses.ThreadResponse{}
+	ctx := c.Request().Context()
+	categoryID := c.Param("categoryID")
+	result, err := controller.ThreadUseCase.GetByCategoryID(ctx, categoryID)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+
+	for _, i := range result {
+		threads = append(threads, responses.FromDomain(i))
+	}
+
 	return controllers.NewSuccessResponse(c, threads)
 }

@@ -35,6 +35,7 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.DELETE("/threads/:id", ctrl.ThreadController.Delete, jwtAuth)
 	baseRoute.GET("/threads/:id", ctrl.ThreadController.GetByID)
 	baseRoute.PATCH("/threads/:id", ctrl.ThreadController.Update, jwtAuth)
+	baseRoute.GET("/threads/category/:categoryID", ctrl.ThreadController.GetByCategoryID)
 
 	//categories
 	baseRoute.GET("/categories", ctrl.CategoriesController.GetAll)
@@ -64,7 +65,7 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	//leaderboard
 	baseRoute.GET("/TopUser", ctrl.UserController.GetTop5User)
 
-  //moderators
+	//moderators
 	baseRoute.GET("/moderators/:categoryID", ctrl.ModeratorsController.GetByCategoryID)
 
 	// Comments

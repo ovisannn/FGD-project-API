@@ -31,6 +31,7 @@ type UseCase interface {
 	GetByID(ctx context.Context, id string) (Domain, error)
 	Update(ctx context.Context, data *Domain, id string) error
 	Search(ctx context.Context, q string, sort string) ([]Domain, error)
+	GetByCategoryID(ctx context.Context, categoryId string) ([]Domain, error)
 }
 
 type Repository interface {
@@ -40,4 +41,5 @@ type Repository interface {
 	GetByID(ctx context.Context, id string) (Domain, error)
 	Update(ctx context.Context, data *Domain, id string) error
 	Search(ctx context.Context, q string, sort string) ([]Domain, error)
+	GetByCategoryID(ctx context.Context, categoryId string) ([]Domain, error)
 }
