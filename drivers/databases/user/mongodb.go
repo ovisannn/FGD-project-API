@@ -196,3 +196,15 @@ func (repository *MongoDBUserRepository) GetModerators(ctx context.Context, idCa
 	return result, nil
 
 }
+
+func (repository *MongoDBUserRepository) GetAllUserProfile(ctx context.Context) ([]user.UserProfileDomain, error) {
+	result := []user.UserProfileDomain{}
+	cursor, err := repository.Conn.Collection("user_profile").Find(ctx, bson.M{})
+	if err != nil {
+		return result, err
+	}
+	if err = cursor.All(ctx, &result); err != nil {
+		return []user.UserProfileDomain{}, err
+	}
+	return result, nil
+}

@@ -205,6 +205,25 @@ func (controller *UserController) GetModeratorsByCategoryID(c echo.Context) erro
 	return controllers.NewSuccessResponse(c, moderators)
 }
 
+func (controller *UserController) GetTop5User(c echo.Context) error {
+	// fmt.Print("aaa")
+	topUser := []responses.UserProfile{}
+	ctx := c.Request().Context()
+	result, err := controller.UserUseCase.GetTop5User(ctx)
+	if err != nil {
+		return controllers.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	counter := 0
+	for _, i := range result {
+		if counter == 5 {
+			break
+		}
+		topUser = append(topUser, responses.UserProfileFromDomain(i))
+		counter += 1
+	}
+	return controllers.NewSuccessResponse(c, topUser)
+}
+
 func (controller *UserController) Test(c echo.Context) error {
 	// a := middlewares.GetUserId(c)
 	// fmt.Print(a)

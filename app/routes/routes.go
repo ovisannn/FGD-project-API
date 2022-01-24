@@ -61,7 +61,7 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.DELETE("/user/logout", ctrl.UserController.Logout)
 
 	//leaderboard
-	//get leaderboard -> GET -> agregate sort by count
+	baseRoute.GET("/TopUser", ctrl.UserController.GetTop5User)
 
 	//moderators
 	baseRoute.GET("/moderators/:categoryID", ctrl.ModeratorsController.GetByCategoryID)
