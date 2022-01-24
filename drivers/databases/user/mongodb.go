@@ -43,7 +43,7 @@ func (repository *MongoDBUserRepository) Register(ctx context.Context, data *use
 
 	newProfileUser := UserProfile{
 		Username:    newUser.Username,
-		ProfilePict: "gs://disspace-250a1.appspot.com/profile_pict/profile_default.jpg",
+		ProfilePict: "gs://disspace-76973.appspot.com/user_profile_img/profile_default.jpg",
 		Bio:         " ",
 		Following:   []string{"0"},
 		Followers:   []string{"0"},
@@ -184,137 +184,30 @@ func (repository *MongoDBUserRepository) DeleteSession(ctx context.Context, data
 	return nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+func (repository *MongoDBUserRepository) GetModerators(ctx context.Context, idCategory string) ([]user.UserProfileDomain, error) {
+	result := []user.UserProfileDomain{}
+	// filter := bson.D{{Key: "kategori_id", Value: idCategory}}
+	// cursor, err := repository.Conn.Collection("moderators").Find(ctx, filter)
+
+	// if err = cursor.All(ctx, &result); err != nil {
+	// 	return []user.UserProfileDomain{}, err
+	// }
+	// fmt.Println(result)
+	return result, nil
+
+}
+
+func (repository *MongoDBUserRepository) GetAllUserProfile(ctx context.Context) ([]user.UserProfileDomain, error) {
+	result := []user.UserProfileDomain{}
+	cursor, err := repository.Conn.Collection("user_profile").Find(ctx, bson.M{})
+	if err != nil {
+		return result, err
+	}
+	if err = cursor.All(ctx, &result); err != nil {
+		return []user.UserProfileDomain{}, err
+	}
+	return result, nil
+}
 
 func (repository *MongoDBUserRepository) Search(ctx context.Context, q string, sort string) ([]user.UserProfileDomain, error) {
 	var result []user.UserProfileDomain
@@ -345,6 +238,5 @@ func (repository *MongoDBUserRepository) Search(ctx context.Context, q string, s
 	if err = cursor.All(ctx, &result); err != nil {
 		return []user.UserProfileDomain{}, err
 	}
-
-	return result, nil
+  return result, nil
 }

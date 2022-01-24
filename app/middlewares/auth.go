@@ -2,7 +2,9 @@ package middlewares
 
 import (
 	"disspace/controllers"
+	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -11,7 +13,7 @@ import (
 )
 
 type JwtClaims struct {
-	UserID string
+	Username string `json:"username" bson:"username"`
 	jwt.StandardClaims
 }
 
@@ -30,9 +32,9 @@ func (config *ConfigJwt) Init() middleware.JWTConfig {
 	}
 }
 
-func (jwtConf *ConfigJwt) GenerateToken(UserID string) (string, error) {
+func (jwtConf *ConfigJwt) GenerateToken(username string) (string, error) {
 	claims := JwtClaims{
-		UserID,
+		username,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(int64(jwtConf.ExpiresAt))).Unix(),
 		},
@@ -42,4 +44,32 @@ func (jwtConf *ConfigJwt) GenerateToken(UserID string) (string, error) {
 	token, err := t.SignedString([]byte(jwtConf.Secret))
 
 	return token, err
+}
+
+func ExtractClaims(tokenStr string) (jwt.MapClaims, bool) {
+	tokenString := strings.Replace(tokenStr, "bearer ", "", -1)
+	// fmt.Println(tokenString)
+	hmacSecretString := "UhYiPkGrOuP10fGd"
+	hmacSecret := []byte(hmacSecretString)
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// check token signing method etc
+		return hmacSecret, nil
+	})
+
+	if err != nil {
+		return nil, false
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, true
+	} else {
+		log.Printf("Invalid JWT Token")
+		return nil, false
+	}
+}
+
+func GetUsername(c echo.Context) string {
+	user := c.Get("username").(*jwt.Token)
+	claims := user.Claims.(*JwtClaims)
+	return string(claims.Username)
 }

@@ -42,16 +42,18 @@ type LoginInfoDomain struct {
 type UseCase interface {
 	Register(ctx context.Context, data *UserDomain) (UserDomain, error)
 	UserProfileGetByUsername(ctx context.Context, username string) (UserProfileDomain, error)
-	GetUserByID(ctx context.Context, id string, dataSession UserSessionDomain) (UserDomain, error)
-	GetUserByUsername(ctx context.Context, username string, dataSession UserSessionDomain) (UserDomain, error)
+	GetUserByID(ctx context.Context, id string, usernamePayload string) (UserDomain, error)
+	GetUserByUsername(ctx context.Context, username string, usernamePayload string) (UserDomain, error)
 	Login(ctx context.Context, username string, password string) (UserSessionDomain, error)
-	Follow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error
-	Unfollow(ctx context.Context, username string, targetUsername string, dataSession UserSessionDomain) error
-	UpdateUserProfile(ctx context.Context, dataSession UserSessionDomain, data UserProfileDomain) error
-	UpdateUserInfo(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error
-	ChangePassword(ctx context.Context, dataSession UserSessionDomain, data UserDomain) error
+	Follow(ctx context.Context, username string, targetUsername string) error
+	Unfollow(ctx context.Context, username string, targetUsername string) error
+	UpdateUserProfile(ctx context.Context, username string, data UserProfileDomain) error
+	UpdateUserInfo(ctx context.Context, username string, data UserDomain) error
+	ChangePassword(ctx context.Context, username string, data UserDomain) error
 	Logout(ctx context.Context, dataSession UserSessionDomain) error
 	Search(ctx context.Context, q string, sort string) ([]UserProfileDomain, error)
+	GetModerators(ctx context.Context, idCategory string) ([]UserProfileDomain, error)
+	GetTop5User(ctx context.Context) ([]UserProfileDomain, error)
 }
 
 type Repository interface {
@@ -62,6 +64,9 @@ type Repository interface {
 	Login(ctx context.Context, username string, password string) (UserDomain, error)
 	UpdateUserProfile(ctx context.Context, username string, data UserProfileDomain) error
 	UpdateUserInfo(ctx context.Context, username string, data UserDomain) error
+	// GetAllUser(ctx context.Context) []UserDomain
+	GetModerators(ctx context.Context, idCategory string) ([]UserProfileDomain, error)
+	GetAllUserProfile(ctx context.Context) ([]UserProfileDomain, error)
 
 	CheckingSession(ctx context.Context, username string) error
 	InsertSession(ctx context.Context, dataSession UserSessionDomain) error
