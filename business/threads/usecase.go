@@ -65,3 +65,11 @@ func (useCase *ThreadUseCase) Search(ctx context.Context, q string, sort string)
 	}
 	return result, nil
 }
+
+func (useCase *ThreadUseCase) GetByCategoryID(ctx context.Context, categoryId string) ([]Domain, error) {
+	result, err := useCase.threadRepo.GetByCategoryID(ctx, categoryId)
+	if err != nil {
+		return []Domain{}, err
+	}
+	return result, nil
+}

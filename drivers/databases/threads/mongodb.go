@@ -3,6 +3,7 @@ package threads
 import (
 	"context"
 	"disspace/business/threads"
+	_userDomain "disspace/business/user"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -243,5 +244,28 @@ func (repository *MongoDBThreadRepository) Search(ctx context.Context, q string,
 	if err = cursor.All(ctx, &result); err != nil {
 		return []threads.Domain{}, err
 	}
+	return result, nil
+}
+
+func (repository *MongoDBThreadRepository) GetByCategoryID(ctx context.Context, categoryId string) ([]threads.Domain, error) {
+	result := []threads.Domain{}
+	filter := bson.D{{Key: "category_id", Value: categoryId}}
+	cursor, err := repository.Conn.Collection("threads").Find(ctx, filter)
+	if err != nil {
+		panic(err)
+	}
+	if err = cursor.All(ctx, &result); err != nil {
+		return []threads.Domain{}, err
+	}
+	for index, item := range result {
+		resultUser := _userDomain.UserProfileDomain{}
+		filterUser := bson.D{{Key: "username", Value: item.UserID}}
+		err := repository.Conn.Collection("user_profile").FindOne(ctx, filterUser).Decode(&resultUser)
+		if err != nil {
+			panic(err)
+		}
+		result[index].User = resultUser
+	}
+	// fmt.Println(result)
 	return result, nil
 }
