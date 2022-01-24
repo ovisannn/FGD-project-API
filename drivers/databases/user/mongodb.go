@@ -5,7 +5,6 @@ import (
 	"disspace/business/user"
 	"disspace/helpers/encryption"
 	"disspace/helpers/messages"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -43,7 +42,7 @@ func (repository *MongoDBUserRepository) Register(ctx context.Context, data *use
 
 	newProfileUser := UserProfile{
 		Username:    newUser.Username,
-		ProfilePict: "gs://disspace-250a1.appspot.com/profile_pict/profile_default.jpg",
+		ProfilePict: "gs://disspace-76973.appspot.com/user_profile_img/profile_default.jpg",
 		Bio:         " ",
 		Following:   []string{"0"},
 		Followers:   []string{"0"},
@@ -186,13 +185,13 @@ func (repository *MongoDBUserRepository) DeleteSession(ctx context.Context, data
 
 func (repository *MongoDBUserRepository) GetModerators(ctx context.Context, idCategory string) ([]user.UserProfileDomain, error) {
 	result := []user.UserProfileDomain{}
-	filter := bson.D{{Key: "kategori_id", Value: idCategory}}
-	cursor, err := repository.Conn.Collection("moderators").Find(ctx, filter)
+	// filter := bson.D{{Key: "kategori_id", Value: idCategory}}
+	// cursor, err := repository.Conn.Collection("moderators").Find(ctx, filter)
 
-	if err = cursor.All(ctx, &result); err != nil {
-		return []user.UserProfileDomain{}, err
-	}
-	fmt.Println(result)
+	// if err = cursor.All(ctx, &result); err != nil {
+	// 	return []user.UserProfileDomain{}, err
+	// }
+	// fmt.Println(result)
 	return result, nil
 
 }
