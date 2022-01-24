@@ -4,6 +4,7 @@ import (
 	"context"
 	"disspace/business/comments"
 	"disspace/helpers/messages"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -125,4 +126,44 @@ func (repository *MongoDBCommentRepository) GetByID(ctx context.Context, id stri
 	}
 
 	return result.ToDomain(), nil
+}
+
+func (repository *MongoDBCommentRepository) GetAllInThread(ctx context.Context, threadId string, parentId string) ([]comments.Domain, error) {
+	result := []comments.Domain{}
+
+	filter := bson.D{{Key: "$and", Value: []interface{}{
+		bson.D{{Key: "thread_id", Value: threadId}}, bson.D{{Key: "parent_id", Value: parentId}},
+	}}}
+
+	var userLookup = bson.M{
+		"from":         "user_profile",
+		"localField":   "username",
+		"foreignField": "username",
+		"as":           "user",
+	}
+
+	fmt.Println(threadId, parentId)
+
+	query := []bson.M{
+		{
+			"$match": filter,
+		},
+		{
+			"$lookup": userLookup,
+		},
+		{
+			"$unwind": "$user",
+		},
+	}
+
+	cursor, err := repository.Conn.Collection("comments").Aggregate(ctx, query)
+	if err != nil {
+		return []comments.Domain{}, err
+	}
+
+	if err = cursor.All(ctx, &result); err != nil {
+		return []comments.Domain{}, err
+	}
+
+	return result, nil
 }

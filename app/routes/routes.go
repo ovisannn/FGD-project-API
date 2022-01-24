@@ -68,10 +68,13 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.POST("/users/:id/comments", ctrl.CommentController.Create)
 	baseRoute.DELETE("/users/:id/comments/:thread_id", ctrl.CommentController.Delete)
 	baseRoute.GET("/comment/:id", ctrl.CommentController.GetByID)
+	baseRoute.GET("/threads/:thread_id/comment/:parent_id", ctrl.CommentController.GetAllInThread)
 
 	// Reports (User, Thread, Comment)
 	baseRoute.PUT("/users/:id/reporting", ctrl.ReportController.Create)
 	baseRoute.GET("/reports", ctrl.ReportController.GetAll)
+	baseRoute.GET("/reports/users", ctrl.ReportController.GetUserReport)
+	baseRoute.GET("/reports/comments", ctrl.ReportController.GetCommentReport)
 
 	// Search (Users, Threads, Comments)
 	baseRoute.GET("/threads/search", ctrl.ThreadController.Search)

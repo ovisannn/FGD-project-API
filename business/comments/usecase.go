@@ -52,3 +52,11 @@ func (useCase *CommentUseCase) GetByID(ctx context.Context, id string) (Domain, 
 	}
 	return result, nil
 }
+
+func (useCase *CommentUseCase) GetAllInThread(ctx context.Context, threadId string, parentId string) ([]Domain, error) {
+	result, err := useCase.commentRepo.GetAllInThread(ctx, threadId, parentId)
+	if err != nil {
+		return []Domain{}, err
+	}
+	return result, nil
+}

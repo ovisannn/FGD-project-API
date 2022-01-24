@@ -27,7 +27,7 @@ type ThreadResponse struct {
 func FromDomain(domain threads.Domain) ThreadResponse {
 	var comments []commentResp.CommentResponse
 	for _, getComment := range domain.Comments {
-		comments = append(comments, commentResp.CommentResponse(getComment))
+		comments = append(comments, commentResp.FromDomain(getComment))
 	}
 
 	var votes []votesResp.VoteReponse

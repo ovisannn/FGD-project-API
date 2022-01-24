@@ -2,18 +2,21 @@ package comments
 
 import (
 	"context"
+	"disspace/business/user"
 	"time"
 )
 
 type Domain struct {
-	ID          string    `bson:"_id,omitempty"`
-	ThreadID    string    `bson:"thread_id"`
-	UserID      string    `bson:"user_id"`
-	Text        string    `bson:"text"`
-	NumVotes    int       `bson:"num_votes"`
-	NumComments int       `bson:"num_comments"`
-	CreatedAt   time.Time `bson:"created_at"`
-	UpdatedAt   time.Time `bson:"updated_at"`
+	ID          string                 `bson:"_id,omitempty"`
+	ThreadID    string                 `bson:"thread_id"`
+	ParentID    string                 `bson:"parent_id"`
+	Username    string                 `bson:"username"`
+	User        user.UserProfileDomain `bson:"user"`
+	Text        string                 `bson:"text"`
+	NumVotes    int                    `bson:"num_votes"`
+	NumComments int                    `bson:"num_comments"`
+	CreatedAt   time.Time              `bson:"created_at"`
+	UpdatedAt   time.Time              `bson:"updated_at"`
 }
 
 type UseCase interface {
@@ -21,6 +24,7 @@ type UseCase interface {
 	Delete(ctx context.Context, id string, threadId string) error
 	Search(ctx context.Context, q string, sort string) ([]Domain, error)
 	GetByID(ctx context.Context, id string) (Domain, error)
+	GetAllInThread(ctx context.Context, threadId string, parentId string) ([]Domain, error)
 }
 
 type Repository interface {
@@ -28,4 +32,5 @@ type Repository interface {
 	Delete(ctx context.Context, id string, threadId string) error
 	Search(ctx context.Context, q string, sort string) ([]Domain, error)
 	GetByID(ctx context.Context, id string) (Domain, error)
+	GetAllInThread(ctx context.Context, threadId string, parentId string) ([]Domain, error)
 }
