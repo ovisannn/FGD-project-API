@@ -261,6 +261,20 @@ func (UseCase *UserUseCase) Logout(ctx context.Context, dataSession UserSessionD
 	return nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (useCase *UserUseCase) Search(ctx context.Context, q string, sort string) ([]UserProfileDomain, error) {
 	result, err := useCase.userRepo.Search(ctx, q, sort)
 	if err != nil {
