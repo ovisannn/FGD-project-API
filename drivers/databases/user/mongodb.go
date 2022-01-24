@@ -5,6 +5,7 @@ import (
 	"disspace/business/user"
 	"disspace/helpers/encryption"
 	"disspace/helpers/messages"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -181,4 +182,29 @@ func (repository *MongoDBUserRepository) DeleteSession(ctx context.Context, data
 		return err
 	}
 	return nil
+}
+
+func (repository *MongoDBUserRepository) GetModerators(ctx context.Context, idCategory string) ([]user.UserProfileDomain, error) {
+	result := []user.UserProfileDomain{}
+	filter := bson.D{{Key: "kategori_id", Value: idCategory}}
+	cursor, err := repository.Conn.Collection("moderators").Find(ctx, filter)
+
+	if err = cursor.All(ctx, &result); err != nil {
+		return []user.UserProfileDomain{}, err
+	}
+	fmt.Println(result)
+	return result, nil
+
+}
+
+func (repository *MongoDBUserRepository) GetAllUserProfile(ctx context.Context) ([]user.UserProfileDomain, error) {
+	result := []user.UserProfileDomain{}
+	cursor, err := repository.Conn.Collection("user_profile").Find(ctx, bson.M{})
+	if err != nil {
+		return result, err
+	}
+	if err = cursor.All(ctx, &result); err != nil {
+		return []user.UserProfileDomain{}, err
+	}
+	return result, nil
 }

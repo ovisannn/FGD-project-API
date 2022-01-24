@@ -32,6 +32,10 @@ import (
 	_reportController "disspace/controllers/reports"
 	_reportRepository "disspace/drivers/databases/reports"
 
+	_ModeratorsUseCase "disspace/business/moderators"
+	_ModeratorsController "disspace/controllers/moderators"
+	_ModeratorsRepository "disspace/drivers/databases/moderators"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
@@ -95,6 +99,10 @@ func main() {
 	reportUseCase := _reportUseCase.NewReportUseCase(reportRepository, timeoutContext)
 	reportController := _reportController.NewReportController(reportUseCase)
 
+	moderatorsRepository := _ModeratorsRepository.NewMongoDBModeratorsRepository(db)
+	moderatorsUseCase := _ModeratorsUseCase.NewModeratorsUseCase(moderatorsRepository)
+	moderatorsController := _ModeratorsController.NewModeratorsController(moderatorsUseCase)
+
 	routesInit := _routes.ControllerList{
 		JWTConfig:            configJWT.Init(),
 		ThreadController:     *threadController,
@@ -103,6 +111,7 @@ func main() {
 		UserController:       *userController,
 		CommentController:    *commentController,
 		ReportController:     *reportController,
+		ModeratorsController: *moderatorsController,
 	}
 
 	routesInit.RouteRegister(e)

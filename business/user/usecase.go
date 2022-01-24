@@ -6,6 +6,7 @@ import (
 	"disspace/helpers/encryption"
 	"disspace/helpers/messages"
 	"disspace/helpers/reslicing"
+	"sort"
 	"time"
 )
 
@@ -203,4 +204,26 @@ func (UseCase *UserUseCase) Logout(ctx context.Context, dataSession UserSessionD
 		return err
 	}
 	return nil
+}
+
+func (UseCase *UserUseCase) GetModerators(ctx context.Context, idCategory string) ([]UserProfileDomain, error) {
+	// result, err := UseCase.GetModerators(ctx, idCategory)
+	// if err != nil {
+	// 	return []UserProfileDomain{}, err
+	// }
+	return []UserProfileDomain{}, nil
+}
+
+func (UseCase *UserUseCase) GetTop5User(ctx context.Context) ([]UserProfileDomain, error) {
+	result, err := UseCase.userRepo.GetAllUserProfile(ctx)
+	if err != nil {
+		return []UserProfileDomain{}, err
+	}
+	// sort.SliceStable(family, func(i, j int) bool {
+	// 	return family[i].Age < family[j].Age
+	// })
+	sort.SliceStable(result, func(i, j int) bool {
+		return len(result[i].Followers)+len(result[i].Threads)+result[i].Reputation > len(result[j].Followers)+len(result[j].Threads)+result[j].Reputation
+	})
+	return result, nil
 }

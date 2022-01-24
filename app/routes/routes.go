@@ -3,6 +3,7 @@ package routes
 import (
 	"disspace/controllers/categories"
 	"disspace/controllers/comments"
+	"disspace/controllers/moderators"
 	"disspace/controllers/reports"
 	"disspace/controllers/threads"
 	"disspace/controllers/user"
@@ -21,6 +22,7 @@ type ControllerList struct {
 	UserController       user.UserController
 	CommentController    comments.CommentController
 	ReportController     reports.ReportController
+	ModeratorsController moderators.ModeratorsController
 }
 
 func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
@@ -46,23 +48,23 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.PUT("/users/:id/votes/:ref_id", ctrl.VoteController.Update, jwtAuth)
 
 	//user
-	baseRoute.POST("/user/register", ctrl.UserController.Register)                            //ok
-	baseRoute.GET("/userProfile/:username", ctrl.UserController.UserProfileGetByUsername)     //ok
-	baseRoute.POST("/user/login", ctrl.UserController.Login)                                  //ok
-	baseRoute.GET("/user/id/:id", ctrl.UserController.GetUserByID, jwtAuth)                   //ok
-	baseRoute.GET("/user/username/:username", ctrl.UserController.GetUserByUsername, jwtAuth) //ok
-	baseRoute.PATCH("/user/follow/:usernameTarget", ctrl.UserController.Follow, jwtAuth)      //ok
-	baseRoute.PATCH("/user/unfollow/:usernameTarget", ctrl.UserController.Unfollow, jwtAuth)  //ok
-	baseRoute.PATCH("/userProfile/update", ctrl.UserController.UpdateUserProfile, jwtAuth)    //ok
-	baseRoute.PATCH("/user/update", ctrl.UserController.UpdateUserInfo, jwtAuth)              //ok
-	baseRoute.PATCH("/user/newPassword", ctrl.UserController.ChangePassword, jwtAuth)         //ok
-	baseRoute.DELETE("/user/logout", ctrl.UserController.Logout)                              //rework or maybe dihapus aja
+	baseRoute.POST("/user/register", ctrl.UserController.Register)
+	baseRoute.GET("/userProfile/:username", ctrl.UserController.UserProfileGetByUsername)
+	baseRoute.POST("/user/login", ctrl.UserController.Login)
+	baseRoute.GET("/user/id/:id", ctrl.UserController.GetUserByID, jwtAuth)
+	baseRoute.GET("/user/username/:username", ctrl.UserController.GetUserByUsername, jwtAuth)
+	baseRoute.PATCH("/user/follow/:usernameTarget", ctrl.UserController.Follow, jwtAuth)
+	baseRoute.PATCH("/user/unfollow/:usernameTarget", ctrl.UserController.Unfollow, jwtAuth)
+	baseRoute.PATCH("/userProfile/update", ctrl.UserController.UpdateUserProfile, jwtAuth)
+	baseRoute.PATCH("/user/update", ctrl.UserController.UpdateUserInfo, jwtAuth)
+	baseRoute.PATCH("/user/newPassword", ctrl.UserController.ChangePassword, jwtAuth)
+	baseRoute.DELETE("/user/logout", ctrl.UserController.Logout)
 
 	//leaderboard
-	//get leaderboard -> GET
+	baseRoute.GET("/TopUser", ctrl.UserController.GetTop5User)
 
 	//moderators
-	//get moderators -> GET
+	baseRoute.GET("/moderators/:categoryID", ctrl.ModeratorsController.GetByCategoryID)
 
 	// Comments
 	baseRoute.POST("/users/:id/comments", ctrl.CommentController.Create, jwtAuth)
