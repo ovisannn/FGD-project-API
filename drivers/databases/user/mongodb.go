@@ -278,6 +278,44 @@ func (repository *MongoDBUserRepository) DeleteSession(ctx context.Context, data
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (repository *MongoDBUserRepository) Search(ctx context.Context, q string, sort string) ([]user.UserProfileDomain, error) {
 	var result []user.UserProfileDomain
 	if sort == "" {
