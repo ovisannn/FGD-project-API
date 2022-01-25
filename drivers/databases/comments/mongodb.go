@@ -4,7 +4,6 @@ import (
 	"context"
 	"disspace/business/comments"
 	"disspace/helpers/messages"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -21,6 +20,31 @@ func NewMongoDBCommentRepository(conn *mongo.Database) comments.Repository {
 		Conn: conn,
 	}
 }
+
+var userLookup = bson.M{
+	"from":         "user_profile",
+	"localField":   "username",
+	"foreignField": "username",
+	"as":           "user",
+}
+
+var votesLookup = bson.M{
+	"from":         "votes",
+	"localField":   "comment_id",
+	"foreignField": "reference_id",
+	"as":           "votes",
+}
+
+var commentLookup = bson.M{
+	"from":         "comments",
+	"localField":   "comment_id",
+	"foreignField": "parent_id",
+	"as":           "comments",
+}
+
+var convIdToString = bson.M{"comment_id": bson.M{"$toString": "$_id"}}
+var countVotes = bson.M{"num_votes": bson.M{"$sum": "$votes.status"}}
+var countComments = bson.M{"num_comments": bson.M{"$size": "$comments"}}
 
 func (repository *MongoDBCommentRepository) Create(ctx context.Context, commentDomain *comments.Domain, id string) (comments.Domain, error) {
 	// Start Error Handling
@@ -113,46 +137,88 @@ func (repository *MongoDBCommentRepository) Search(ctx context.Context, q string
 }
 
 func (repository *MongoDBCommentRepository) GetByID(ctx context.Context, id string) (comments.Domain, error) {
-	result := Comment{}
+	result := []Comment{}
 
 	conv, errConvId := primitive.ObjectIDFromHex(id)
 	if errConvId != nil {
 		return comments.Domain{}, messages.ErrInvalidUserID
 	}
-	var filter = bson.D{{Key: "_id", Value: conv}}
-	err := repository.Conn.Collection("comments").FindOne(ctx, filter).Decode(&result)
-	if err != nil {
-		return comments.Domain{}, err
-	}
 
-	return result.ToDomain(), nil
-}
-
-func (repository *MongoDBCommentRepository) GetAllInThread(ctx context.Context, threadId string, parentId string) ([]comments.Domain, error) {
-	result := []comments.Domain{}
-
-	filter := bson.D{{Key: "$and", Value: []interface{}{
-		bson.D{{Key: "thread_id", Value: threadId}}, bson.D{{Key: "parent_id", Value: parentId}},
-	}}}
-
-	var userLookup = bson.M{
-		"from":         "user_profile",
-		"localField":   "username",
-		"foreignField": "username",
-		"as":           "user",
-	}
-
-	fmt.Println(threadId, parentId)
+	filter := bson.D{{Key: "_id", Value: conv}}
 
 	query := []bson.M{
 		{
 			"$match": filter,
 		},
 		{
+			"$addFields": convIdToString,
+		},
+		{
 			"$lookup": userLookup,
 		},
 		{
+			"$lookup": votesLookup,
+		},
+		{
+			"$lookup": commentLookup,
+		},
+		{
 			"$unwind": "$user",
+		},
+		{
+			"$addFields": countVotes,
+		},
+		{
+			"$addFields": countComments,
+		},
+	}
+
+	cursor, err := repository.Conn.Collection("comments").Aggregate(ctx, query)
+	if err != nil {
+		return comments.Domain{}, err
+	}
+
+	if err = cursor.All(ctx, &result); err != nil {
+		return comments.Domain{}, err
+	}
+
+	var res = result[0]
+
+	return res.ToDomain(), nil
+}
+
+func (repository *MongoDBCommentRepository) GetAllInThread(ctx context.Context, threadId string, parentId string) ([]comments.Domain, error) {
+	result := []comments.Domain{}
+
+	// filter := bson.D{{Key: "$and", Value: []interface{}{
+	// 	bson.D{{Key: "thread_id", Value: threadId}}, bson.D{{Key: "parent_id", Value: parentId}},
+	// }}}
+	filter := bson.D{{Key: "thread_id", Value: threadId}}
+
+	query := []bson.M{
+		{
+			"$match": filter,
+		},
+		{
+			"$addFields": convIdToString,
+		},
+		{
+			"$lookup": userLookup,
+		},
+		{
+			"$lookup": votesLookup,
+		},
+		{
+			"$lookup": commentLookup,
+		},
+		{
+			"$unwind": "$user",
+		},
+		{
+			"$addFields": countVotes,
+		},
+		{
+			"$addFields": countComments,
 		},
 	}
 
