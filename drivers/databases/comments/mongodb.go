@@ -187,13 +187,17 @@ func (repository *MongoDBCommentRepository) GetByID(ctx context.Context, id stri
 	return res.ToDomain(), nil
 }
 
-func (repository *MongoDBCommentRepository) GetAllInThread(ctx context.Context, threadId string, parentId string) ([]comments.Domain, error) {
+func (repository *MongoDBCommentRepository) GetAllInThread(ctx context.Context, threadId string, parentId string, option string) ([]comments.Domain, error) {
 	result := []comments.Domain{}
 
-	// filter := bson.D{{Key: "$and", Value: []interface{}{
-	// 	bson.D{{Key: "thread_id", Value: threadId}}, bson.D{{Key: "parent_id", Value: parentId}},
-	// }}}
-	filter := bson.D{{Key: "thread_id", Value: threadId}}
+	var opts = bson.D{{Key: "parent_id", Value: parentId}}
+	if option == "ne" {
+		opts = bson.D{{Key: "parent_id", Value: bson.D{{Key: "$ne", Value: parentId}}}}
+	}
+	filter := bson.D{{Key: "$and", Value: []interface{}{
+		bson.D{{Key: "thread_id", Value: threadId}}, opts,
+	}}}
+	// filter := bson.D{{Key: "thread_id", Value: threadId}}
 
 	query := []bson.M{
 		{
