@@ -31,27 +31,27 @@ func (useCase *CommentUseCase) Create(ctx context.Context, commentDomain *Domain
 	return result, nil
 }
 
-func (useCase *CommentUseCase) Delete(ctx context.Context, id string, threadId string) error {
+func (useCase *CommentUseCase) Delete(ctx context.Context, id string, commentId string) error {
 	if strings.TrimSpace(id) == "" {
+		return messages.ErrInvalidUserID
+	}
+
+	if strings.TrimSpace(commentId) == "" {
 		return messages.ErrInvalidCommentID
 	}
 
-	if strings.TrimSpace(threadId) == "" {
-		return messages.ErrInvalidThreadID
-	}
-
-	err := useCase.commentRepo.Delete(ctx, id, threadId)
+	err := useCase.commentRepo.Delete(ctx, id, commentId)
 	if err != nil {
-		if err == messages.ErrInvalidThreadID {
-			return messages.ErrInvalidThreadID
+		if err == messages.ErrInvalidCommentID {
+			return messages.ErrInvalidCommentID
 		}
-		return messages.ErrInvalidUserID
+		return err
 	}
 	return nil
 }
 
 func (useCase *CommentUseCase) Search(ctx context.Context, q string, sort string) ([]Domain, error) {
-	if sort != "" && sort != "created" && sort != "num_votes" && sort != "num_comments" {
+	if sort != "" && sort != "created_at" && sort != "num_votes" && sort != "num_comments" {
 		return []Domain{}, messages.ErrInvalidQueryParam
 	}
 
@@ -75,6 +75,9 @@ func (useCase *CommentUseCase) GetByID(ctx context.Context, id string) (Domain, 
 }
 
 func (useCase *CommentUseCase) GetAllInThread(ctx context.Context, threadId string, parentId string, option string) ([]Domain, error) {
+	if option != "ne" && option != "" {
+		return []Domain{}, messages.ErrInvalidOption
+	}
 	if strings.TrimSpace(threadId) == "" || strings.TrimSpace(parentId) == "" {
 		return []Domain{}, messages.ErrInvalidThreadOrParent
 	}

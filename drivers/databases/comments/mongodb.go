@@ -78,21 +78,16 @@ func (repository *MongoDBCommentRepository) Create(ctx context.Context, commentD
 	return comments.Domain{ID: commentId}, nil
 }
 
-func (repository *MongoDBCommentRepository) Delete(ctx context.Context, id string, threadId string) error {
+func (repository *MongoDBCommentRepository) Delete(ctx context.Context, id string, commentId string) error {
 	// Start Error Handling
-	_, errConvId := primitive.ObjectIDFromHex(id)
-	if errConvId != nil {
-		return messages.ErrInvalidUserID
-	}
-
-	_, errConvThreadId := primitive.ObjectIDFromHex(threadId)
-	if errConvThreadId != nil {
-		return messages.ErrInvalidThreadID
+	conv, errConvcommentId := primitive.ObjectIDFromHex(commentId)
+	if errConvcommentId != nil {
+		return messages.ErrInvalidCommentID
 	}
 	// End Error Handling
 
 	filter := bson.D{{Key: "$and", Value: []interface{}{
-		bson.D{{Key: "user_id", Value: id}}, bson.D{{Key: "thread_id", Value: threadId}},
+		bson.D{{Key: "username", Value: id}}, bson.D{{Key: "_id", Value: conv}},
 	}}}
 	result, err := repository.Conn.Collection("comments").DeleteOne(ctx, filter)
 	if err != nil {

@@ -24,4 +24,5 @@ var (
 	ErrTextCannotBeEmpty     = errors.New("text body cannot be empty")
 	ErrInvalidThreadOrParent = errors.New("invalid thread or param id")
 	ErrEmptyTitle            = errors.New("title cannot be empty")
+	ErrInvalidOption         = errors.New("invalid option")
 )

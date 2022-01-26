@@ -69,7 +69,7 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 
 	// Comments
 	baseRoute.POST("/users/:id/comments", ctrl.CommentController.Create, jwtAuth)
-	baseRoute.DELETE("/users/:id/comments/:thread_id", ctrl.CommentController.Delete, jwtAuth)
+	baseRoute.DELETE("/users/:id/comments/:comment_id", ctrl.CommentController.Delete, jwtAuth)
 	baseRoute.GET("/comment/:id", ctrl.CommentController.GetByID)
 	baseRoute.GET("/threads/:thread_id/comment/:parent_id", ctrl.CommentController.GetAllInThread)
 
