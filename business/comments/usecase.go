@@ -20,13 +20,17 @@ func NewCommentUseCase(commentRepository Repository, timeout time.Duration) UseC
 }
 
 func (useCase *CommentUseCase) Create(ctx context.Context, commentDomain *Domain, id string) (Domain, error) {
+	if strings.TrimSpace(id) == "" {
+		return Domain{}, messages.ErrInvalidUserID
+	}
+
 	if strings.TrimSpace(commentDomain.Text) == "" {
 		return Domain{}, messages.ErrTextCannotBeEmpty
 	}
 
 	result, err := useCase.commentRepo.Create(ctx, commentDomain, id)
 	if err != nil {
-		return Domain{}, err
+		return Domain{}, messages.ErrInternalServerError
 	}
 	return result, nil
 }
@@ -81,7 +85,7 @@ func (useCase *CommentUseCase) GetAllInThread(ctx context.Context, threadId stri
 	if strings.TrimSpace(threadId) == "" || strings.TrimSpace(parentId) == "" {
 		return []Domain{}, messages.ErrInvalidThreadOrParent
 	}
-	
+
 	result, err := useCase.commentRepo.GetAllInThread(ctx, threadId, parentId, option)
 	if err != nil {
 		return []Domain{}, err

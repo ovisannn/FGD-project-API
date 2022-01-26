@@ -25,4 +25,5 @@ var (
 	ErrInvalidThreadOrParent = errors.New("invalid thread or param id")
 	ErrEmptyTitle            = errors.New("title cannot be empty")
 	ErrInvalidOption         = errors.New("invalid option")
+	ErrInternalServerError   = errors.New("internal server error")
 )

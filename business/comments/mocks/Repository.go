@@ -35,13 +35,13 @@ func (_m *Repository) Create(ctx context.Context, data *comments.Domain, id stri
 	return r0, r1
 }
 
-// Delete provides a mock function with given fields: ctx, id, threadId
-func (_m *Repository) Delete(ctx context.Context, id string, threadId string) error {
-	ret := _m.Called(ctx, id, threadId)
+// Delete provides a mock function with given fields: ctx, id, commentId
+func (_m *Repository) Delete(ctx context.Context, id string, commentId string) error {
+	ret := _m.Called(ctx, id, commentId)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, string, string) error); ok {
-		r0 = rf(ctx, id, threadId)
+		r0 = rf(ctx, id, commentId)
 	} else {
 		r0 = ret.Error(0)
 	}

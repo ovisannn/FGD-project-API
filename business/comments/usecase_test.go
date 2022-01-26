@@ -56,12 +56,29 @@ func TestCreate(t *testing.T) {
 		assert.Equal(t, comments.Domain{}, result)
 	})
 
-	// t.Run("Text 3 || Invalid ID", func(t *testing.T) {
-	// 	commentRepository.On("Create", mock.Anything, mock.Anything, mock.AnythingOfType("string")).Return(comments.Domain{}, messages.ErrInvalidUserID).Once()
-	// 	_, err := commentUseCase.Create(context.Background(), &comments.Domain{}, "")
+	t.Run("Text 3 | Invalid User ID Cannot Empty", func(t *testing.T) {
+		commentRepository.On("Create", mock.Anything, mock.Anything, mock.AnythingOfType("string")).Return(comments.Domain{}, messages.ErrInvalidUserID).Once()
+		result, err := commentUseCase.Create(context.Background(), &comments.Domain{}, "  ")
 
-	// 	assert.Error(t, err)
-	// })
+		assert.Equal(t, messages.ErrInvalidUserID, err)
+		assert.Empty(t, result)
+	})
+
+	t.Run("Test 4 | Internal Server Error", func(t *testing.T) {
+		domain := comments.Domain{
+			ThreadID: "61c3ef84cdece58dbf9d112a",
+			ParentID: "61c3ef84cdece58dbf9d112a",
+			Username: "blueflower1234",
+			Text:     "This is a very nice thread, I mostly agree with what you've said",
+		}
+
+		commentRepository.On("Create", mock.Anything, mock.Anything, mock.AnythingOfType("string")).Return(comments.Domain{}, messages.ErrInternalServerError).Once()
+
+		result, err := commentUseCase.Create(context.Background(), &domain, "redrose123")
+
+		assert.Equal(t, messages.ErrInternalServerError, err)
+		assert.Empty(t, result)
+	})
 }
 
 func TestDelete(t *testing.T) {
@@ -125,7 +142,7 @@ func TestSearch(t *testing.T) {
 	})
 
 	t.Run("Test 2 | Invalid Query Params Sorting", func(t *testing.T) {
-		commentRepository.On("Search", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return([]comments.Domain{}, messages.ErrInvalidQueryParam)
+		commentRepository.On("Search", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return([]comments.Domain{}, messages.ErrInvalidQueryParam).Once()
 
 		result, err := commentUseCase.Search(context.Background(), "nest", "title")
 
@@ -134,7 +151,7 @@ func TestSearch(t *testing.T) {
 	})
 
 	t.Run("Test 3 | Not Found", func(t *testing.T) {
-		commentRepository.On("Search", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return([]comments.Domain{}, messages.ErrDataNotFound)
+		commentRepository.On("Search", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return([]comments.Domain{}, messages.ErrDataNotFound).Once()
 
 		result, err := commentUseCase.Search(context.Background(), "marvel", "num_votes")
 
@@ -146,11 +163,11 @@ func TestSearch(t *testing.T) {
 func TestGetByID(t *testing.T) {
 	t.Run("Test 1 | Valid Test", func(t *testing.T) {
 		domain := comments.Domain{
-				ID:       "61ef7e825b3bde4d5d8a5809",
-				ThreadID: "61ee44afbe6ee82e98c03595",
-				ParentID: "61e829422286ebd562e314da",
-				Username: "milens1234",
-				Text:     "<p>nested 1</p>",
+			ID:       "61ef7e825b3bde4d5d8a5809",
+			ThreadID: "61ee44afbe6ee82e98c03595",
+			ParentID: "61e829422286ebd562e314da",
+			Username: "milens1234",
+			Text:     "<p>nested 1</p>",
 		}
 
 		commentRepository.On("GetByID", mock.Anything, mock.AnythingOfType("string")).Return(domain, nil).Once()
@@ -162,16 +179,16 @@ func TestGetByID(t *testing.T) {
 	})
 
 	t.Run("Test 2 | Data Not Found", func(t *testing.T) {
-		commentRepository.On("GetByID", mock.Anything, mock.AnythingOfType("string")).Return(comments.Domain{}, messages.ErrDataNotFound)
+		commentRepository.On("GetByID", mock.Anything, mock.AnythingOfType("string")).Return(comments.Domain{}, messages.ErrDataNotFound).Once()
 
 		result, err := commentUseCase.GetByID(context.Background(), "61ef7e825b3bde4d5d8a5aaa")
-		
+
 		assert.Equal(t, messages.ErrDataNotFound, err)
 		assert.Empty(t, result)
 	})
 
 	t.Run("Test 3 | Invalid Comment ID", func(t *testing.T) {
-		commentRepository.On("GetByID", mock.Anything, mock.AnythingOfType("string")).Return(comments.Domain{}, messages.ErrInvalidCommentID)
+		commentRepository.On("GetByID", mock.Anything, mock.AnythingOfType("string")).Return(comments.Domain{}, messages.ErrInvalidCommentID).Once()
 
 		result, err := commentUseCase.GetByID(context.Background(), "  ")
 
@@ -199,16 +216,16 @@ func TestGetAllInThread(t *testing.T) {
 			},
 		}
 
-		commentRepository.On("GetAllInThread", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(commentsDomain, nil)
+		commentRepository.On("GetAllInThread", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(commentsDomain, nil).Once()
 
 		result, err := commentUseCase.GetAllInThread(context.Background(), "61ee44afbe6ee82e98c03595", "61ee44afbe6ee82e98c03595", "")
-		
+
 		assert.Nil(t, err)
 		assert.NotEmpty(t, result)
 	})
 
 	t.Run("Test 2 | Invalid Option", func(t *testing.T) {
-		commentRepository.On("GetAllInThread", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return([]comments.Domain{}, messages.ErrInvalidOption)
+		commentRepository.On("GetAllInThread", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return([]comments.Domain{}, messages.ErrInvalidOption).Once()
 
 		result, err := commentUseCase.GetAllInThread(context.Background(), "61ee44afbe6ee82e98c03595", "61ee44afbe6ee82e98c03595", "in")
 
@@ -216,12 +233,21 @@ func TestGetAllInThread(t *testing.T) {
 		assert.Empty(t, result)
 	})
 
-	t.Run("Test 3 | Invalid Thread Or Parent ID",func(t *testing.T) {
-		commentRepository.On("GetAllInThread", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return([]comments.Domain{}, messages.ErrInvalidThreadOrParent)
+	t.Run("Test 3 | Invalid Thread Or Parent ID", func(t *testing.T) {
+		commentRepository.On("GetAllInThread", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return([]comments.Domain{}, messages.ErrInvalidThreadOrParent).Once()
 
 		result, err := commentUseCase.GetAllInThread(context.Background(), " ", "    ", "")
-		
+
 		assert.Equal(t, messages.ErrInvalidThreadOrParent, err)
+		assert.Empty(t, result)
+	})
+
+	t.Run("Test 4 | Internal Server Error or Data Not Found", func(t *testing.T) {
+		commentRepository.On("GetAllInThread", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return([]comments.Domain{}, messages.ErrDataNotFound)
+
+		result, err := commentUseCase.GetAllInThread(context.Background(), "61ee44afbe6ee82e98c03595", "61ee44afbe6ee82e98c03595", "")
+
+		assert.NotNil(t, err)
 		assert.Empty(t, result)
 	})
 }

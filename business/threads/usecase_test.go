@@ -57,6 +57,22 @@ func TestCreate(t *testing.T) {
 		assert.Equal(t, messages.ErrEmptyTitle, err)
 		assert.Empty(t, result)
 	})
+
+	t.Run("Test 3 | Internal Server Error", func(t *testing.T) {
+		domain := threads.Domain{
+			Username:   "forgetmenot7",
+			Title:      "Can you recreate dinosaur??",
+			ImageUrl:   "https://firebasestorage.googleapis.com/v0/b/disspace-76973.appspot.com/o/images%2Fpexels-chan-walrus-958545.jpg?alt=media&token=43d8db09-1074-446b-95b3-8a505a1751ac",
+			CategoryID: "61c87cdada2db751926ee3ea",
+		}
+
+		threadsRepository.On("Create", mock.Anything, mock.Anything).Return(threads.Domain{}, messages.ErrInternalServerError).Once()
+
+		result, err := threadUseCase.Create(context.Background(), &domain)
+
+		assert.Equal(t, messages.ErrInternalServerError, err)
+		assert.Empty(t, result)
+	})
 }
 
 func TestGetAll(t *testing.T) {
@@ -250,7 +266,7 @@ func TestSearch(t *testing.T) {
 	})
 
 	t.Run("Test 3 | Not Found", func(t *testing.T) {
-		threadsRepository.On("Search", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return([]threads.Domain{}, messages.ErrDataNotFound)
+		threadsRepository.On("Search", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return([]threads.Domain{}, messages.ErrDataNotFound).Once()
 
 		result, err := threadUseCase.Search(context.Background(), "super", "num_votes")
 

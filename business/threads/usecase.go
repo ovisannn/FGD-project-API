@@ -38,7 +38,7 @@ func (useCase *ThreadUseCase) Create(ctx context.Context, threadDomain *Domain) 
 
 	result, err := useCase.threadRepo.Create(ctx, threadDomain)
 	if err != nil {
-		return Domain{}, err
+		return Domain{}, messages.ErrInternalServerError
 	}
 	return result, nil
 }
@@ -84,7 +84,7 @@ func (useCase *ThreadUseCase) Search(ctx context.Context, q string, sort string)
 
 	result, err := useCase.threadRepo.Search(ctx, q, sort)
 	if err != nil {
-		return []Domain{}, err
+		return []Domain{}, messages.ErrInternalServerError
 	}
 	return result, nil
 }
