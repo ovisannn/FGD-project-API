@@ -10,7 +10,7 @@ import (
 
 type Domain struct {
 	ID          string                 `bson:"_id,omitempty"`
-	UserID      string                 `bson:"user_id"`
+	Username    string                 `bson:"username"`
 	User        user.UserProfileDomain `bson:"user"`
 	CategoryID  string                 `bson:"category_id"`
 	Title       string                 `bson:"title"`

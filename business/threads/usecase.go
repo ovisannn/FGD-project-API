@@ -20,7 +20,7 @@ func NewThreadUseCase(threadRepository Repository, timeout time.Duration) UseCas
 }
 
 func (useCase *ThreadUseCase) GetAll(ctx context.Context, sort string) ([]Domain, error) {
-	if sort != "" && sort != "created" && sort != "num_votes" && sort != "num_comments" {
+	if sort != "" && sort != "created_at" && sort != "num_votes" && sort != "num_comments" {
 		return []Domain{}, messages.ErrInvalidQueryParam
 	}
 
@@ -78,7 +78,7 @@ func (useCase *ThreadUseCase) Update(ctx context.Context, threadDomain *Domain, 
 }
 
 func (useCase *ThreadUseCase) Search(ctx context.Context, q string, sort string) ([]Domain, error) {
-	if sort != "" && sort != "created" && sort != "num_votes" && sort != "num_comments" {
+	if sort != "" && sort != "created_at" && sort != "num_votes" && sort != "num_comments" {
 		return []Domain{}, messages.ErrInvalidQueryParam
 	}
 
