@@ -3,6 +3,7 @@ package comments
 import (
 	"context"
 	"disspace/business/user"
+	"disspace/business/votes"
 	"time"
 )
 
@@ -15,6 +16,7 @@ type Domain struct {
 	Text        string                 `bson:"text"`
 	NumVotes    int                    `bson:"num_votes"`
 	NumComments int                    `bson:"num_comments"`
+	Votes       []votes.Domain         `bson:"votes,omitempty"`
 	CreatedAt   time.Time              `bson:"created_at"`
 	UpdatedAt   time.Time              `bson:"updated_at"`
 }
@@ -24,7 +26,7 @@ type UseCase interface {
 	Delete(ctx context.Context, id string, threadId string) error
 	Search(ctx context.Context, q string, sort string) ([]Domain, error)
 	GetByID(ctx context.Context, id string) (Domain, error)
-	GetAllInThread(ctx context.Context, threadId string, parentId string) ([]Domain, error)
+	GetAllInThread(ctx context.Context, threadId string, parentId string, option string) ([]Domain, error)
 }
 
 type Repository interface {
@@ -32,5 +34,5 @@ type Repository interface {
 	Delete(ctx context.Context, id string, threadId string) error
 	Search(ctx context.Context, q string, sort string) ([]Domain, error)
 	GetByID(ctx context.Context, id string) (Domain, error)
-	GetAllInThread(ctx context.Context, threadId string, parentId string) ([]Domain, error)
+	GetAllInThread(ctx context.Context, threadId string, parentId string, option string) ([]Domain, error)
 }

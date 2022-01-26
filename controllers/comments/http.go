@@ -89,9 +89,10 @@ func (controller *CommentController) GetAllInThread(c echo.Context) error {
 	comments := []response.CommentResponse{}
 	threadId := c.Param("thread_id")
 	parentId := c.Param("parent_id")
+	option := c.QueryParam("option")
 	ctx := c.Request().Context()
 
-	result, err := controller.CommentUseCase.GetAllInThread(ctx, threadId, parentId)
+	result, err := controller.CommentUseCase.GetAllInThread(ctx, threadId, parentId, option)
 	if err != nil {
 		return controllers.NewErrorResponse(c, http.StatusNotFound, err)
 	}
