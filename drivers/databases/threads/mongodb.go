@@ -36,7 +36,7 @@ var commentLookup = bson.M{
 
 var userLookup = bson.M{
 	"from":         "user_profile",
-	"localField":   "user_id",
+	"localField":   "username",
 	"foreignField": "username",
 	"as":           "user",
 }

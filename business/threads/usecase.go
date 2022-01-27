@@ -3,6 +3,7 @@ package threads
 import (
 	"context"
 	"disspace/helpers/messages"
+	"strings"
 	"time"
 )
 
@@ -19,6 +20,10 @@ func NewThreadUseCase(threadRepository Repository, timeout time.Duration) UseCas
 }
 
 func (useCase *ThreadUseCase) GetAll(ctx context.Context, sort string) ([]Domain, error) {
+	if sort != "" && sort != "created_at" && sort != "num_votes" && sort != "num_comments" {
+		return []Domain{}, messages.ErrInvalidQueryParam
+	}
+
 	result, err := useCase.threadRepo.GetAll(ctx, sort)
 	if err != nil {
 		return []Domain{}, err
@@ -27,14 +32,22 @@ func (useCase *ThreadUseCase) GetAll(ctx context.Context, sort string) ([]Domain
 }
 
 func (useCase *ThreadUseCase) Create(ctx context.Context, threadDomain *Domain) (Domain, error) {
+	if threadDomain.Title == "" || strings.TrimSpace(threadDomain.Title) == "" {
+		return Domain{}, messages.ErrEmptyTitle
+	}
+
 	result, err := useCase.threadRepo.Create(ctx, threadDomain)
 	if err != nil {
-		return Domain{}, err
+		return Domain{}, messages.ErrInternalServerError
 	}
 	return result, nil
 }
 
 func (useCase *ThreadUseCase) Delete(ctx context.Context, id string) error {
+	if strings.TrimSpace(id) == "" {
+		return messages.ErrInvalidThreadID
+	}
+
 	err := useCase.threadRepo.Delete(ctx, id)
 	if err != nil {
 		return messages.ErrInvalidThreadID
@@ -43,6 +56,9 @@ func (useCase *ThreadUseCase) Delete(ctx context.Context, id string) error {
 }
 
 func (useCase *ThreadUseCase) GetByID(ctx context.Context, id string) (Domain, error) {
+	if strings.TrimSpace(id) == "" {
+		return Domain{}, messages.ErrInvalidThreadID
+	}
 	result, err := useCase.threadRepo.GetByID(ctx, id)
 	if err != nil {
 		return Domain{}, messages.ErrInvalidThreadID
@@ -51,6 +67,9 @@ func (useCase *ThreadUseCase) GetByID(ctx context.Context, id string) (Domain, e
 }
 
 func (useCase *ThreadUseCase) Update(ctx context.Context, threadDomain *Domain, id string) error {
+	if strings.TrimSpace(id) == "" {
+		return messages.ErrInvalidThreadID
+	}
 	err := useCase.threadRepo.Update(ctx, threadDomain, id)
 	if err != nil {
 		return messages.ErrInvalidThreadID
@@ -59,9 +78,13 @@ func (useCase *ThreadUseCase) Update(ctx context.Context, threadDomain *Domain, 
 }
 
 func (useCase *ThreadUseCase) Search(ctx context.Context, q string, sort string) ([]Domain, error) {
+	if sort != "" && sort != "created_at" && sort != "num_votes" && sort != "num_comments" {
+		return []Domain{}, messages.ErrInvalidQueryParam
+	}
+
 	result, err := useCase.threadRepo.Search(ctx, q, sort)
 	if err != nil {
-		return []Domain{}, err
+		return []Domain{}, messages.ErrInternalServerError
 	}
 	return result, nil
 }

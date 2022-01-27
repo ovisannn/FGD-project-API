@@ -23,7 +23,7 @@ type Domain struct {
 
 type UseCase interface {
 	Create(ctx context.Context, data *Domain, id string) (Domain, error)
-	Delete(ctx context.Context, id string, threadId string) error
+	Delete(ctx context.Context, id string, commentId string) error
 	Search(ctx context.Context, q string, sort string) ([]Domain, error)
 	GetByID(ctx context.Context, id string) (Domain, error)
 	GetAllInThread(ctx context.Context, threadId string, parentId string, option string) ([]Domain, error)
@@ -31,7 +31,7 @@ type UseCase interface {
 
 type Repository interface {
 	Create(ctx context.Context, data *Domain, id string) (Domain, error)
-	Delete(ctx context.Context, id string, threadId string) error
+	Delete(ctx context.Context, id string, commentId string) error
 	Search(ctx context.Context, q string, sort string) ([]Domain, error)
 	GetByID(ctx context.Context, id string) (Domain, error)
 	GetAllInThread(ctx context.Context, threadId string, parentId string, option string) ([]Domain, error)

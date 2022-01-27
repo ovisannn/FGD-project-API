@@ -6,7 +6,7 @@ import (
 )
 
 type Thread struct {
-	UserID     string    `json:"user_id" bson:"user_id"`
+	Username   string    `json:"username" bson:"username"`
 	CategoryID string    `json:"category_id" bson:"category_id"`
 	Title      string    `json:"title,omitempty" bson:"title,omitempty"`
 	Content    string    `json:"content,omitempty" bson:"content,omitempty"`
@@ -16,15 +16,15 @@ type Thread struct {
 }
 
 type ThreadUpdate struct {
-	Title      string    `json:"title,omitempty" bson:"title,omitempty"`
-	Content    string    `json:"content,omitempty" bson:"content,omitempty"`
-	ImageUrl   string    `json:"image_url,omitempty" bson:"image_url,omitempty"`
-	UpdatedAt  time.Time `json:"updated_at" bson:"updated_at"`
+	Title     string    `json:"title,omitempty" bson:"title,omitempty"`
+	Content   string    `json:"content,omitempty" bson:"content,omitempty"`
+	ImageUrl  string    `json:"image_url,omitempty" bson:"image_url,omitempty"`
+	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
 }
 
 func (request *Thread) ToDomain() *threads.Domain {
 	return &threads.Domain{
-		UserID:     request.UserID,
+		Username:     request.Username,
 		CategoryID: request.CategoryID,
 		Title:      request.Title,
 		Content:    request.Content,

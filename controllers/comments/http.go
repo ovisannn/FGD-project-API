@@ -44,9 +44,9 @@ func (controller *CommentController) Delete(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	id := c.Param("id")
-	threadId := c.Param("thread_id")
+	commentId := c.Param("comment_id")
 
-	err := controller.CommentUseCase.Delete(ctx, id, threadId)
+	err := controller.CommentUseCase.Delete(ctx, id, commentId)
 	if err != nil {
 		if err == messages.ErrDataNotFound {
 			return controllers.NewErrorResponse(c, http.StatusNotFound, err)

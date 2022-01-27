@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	// "go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoDBCommentRepository struct {
@@ -78,21 +78,16 @@ func (repository *MongoDBCommentRepository) Create(ctx context.Context, commentD
 	return comments.Domain{ID: commentId}, nil
 }
 
-func (repository *MongoDBCommentRepository) Delete(ctx context.Context, id string, threadId string) error {
+func (repository *MongoDBCommentRepository) Delete(ctx context.Context, id string, commentId string) error {
 	// Start Error Handling
-	_, errConvId := primitive.ObjectIDFromHex(id)
-	if errConvId != nil {
-		return messages.ErrInvalidUserID
-	}
-
-	_, errConvThreadId := primitive.ObjectIDFromHex(threadId)
-	if errConvThreadId != nil {
-		return messages.ErrInvalidThreadID
+	conv, errConvcommentId := primitive.ObjectIDFromHex(commentId)
+	if errConvcommentId != nil {
+		return messages.ErrInvalidCommentID
 	}
 	// End Error Handling
 
 	filter := bson.D{{Key: "$and", Value: []interface{}{
-		bson.D{{Key: "user_id", Value: id}}, bson.D{{Key: "thread_id", Value: threadId}},
+		bson.D{{Key: "username", Value: id}}, bson.D{{Key: "_id", Value: conv}},
 	}}}
 	result, err := repository.Conn.Collection("comments").DeleteOne(ctx, filter)
 	if err != nil {
@@ -110,7 +105,7 @@ func (repository *MongoDBCommentRepository) Search(ctx context.Context, q string
 		sort = "created_at"
 	}
 	sorting := bson.M{sort: -1}
-	opts := options.Find().SetSort(sorting)
+	// opts := options.Find().SetSort(sorting)
 
 	// Create index for comments collection
 	model := mongo.IndexModel{Keys: bson.D{{Key: "text", Value: "text"}}}
@@ -120,12 +115,44 @@ func (repository *MongoDBCommentRepository) Search(ctx context.Context, q string
 	}
 
 	// Search
-	filter := bson.D{}
-	if q != "" {
-		filter = bson.D{{Key: "username", Value: primitive.Regex{Pattern: q, Options: "i"}}}
+	// filter := bson.D{}
+	// if q != "" {
+	// 	filter = bson.D{{Key: "text", Value: primitive.Regex{Pattern: q, Options: "i"}}}
+	// }
+	filter := bson.D{{Key: "text", Value: primitive.Regex{Pattern: q, Options: "i"}}}
+
+	query := []bson.M{
+		{
+			"$match": filter,
+		},
+		{
+			"$addFields": convIdToString,
+		},
+		{
+			"$lookup": userLookup,
+		},
+		{
+			"$lookup": votesLookup,
+		},
+		{
+			"$lookup": commentLookup,
+		},
+		{
+			"$unwind": "$user",
+		},
+		{
+			"$addFields": countVotes,
+		},
+		{
+			"$addFields": countComments,
+		},
+		{
+			"$sort": sorting,
+		},
 	}
 
-	cursor, err := repository.Conn.Collection("comments").Find(ctx, filter, opts)
+	cursor, err := repository.Conn.Collection("comments").Aggregate(ctx, query)
+	// cursor, err := repository.Conn.Collection("comments").Find(ctx, filter, opts)
 	if err != nil {
 		return []comments.Domain{}, err
 	}

@@ -13,7 +13,7 @@ import (
 
 type Thread struct {
 	ID          string              `json:"_id,omitempty" bson:"_id,omitempty"`
-	UserID      string              `json:"user_id,omitempty" bson:"user_id,omitempty"`
+	Username    string              `json:"username,omitempty" bson:"username,omitempty"`
 	User        user.UserProfile    `json:"user,omitempty" bson:"user,omitempty"`
 	CategoryID  string              `json:"category_id,omitempty" bson:"category_id,omitempty"`
 	Title       string              `json:"title,omitempty" bson:"title,omitempty"`
@@ -40,7 +40,7 @@ func (record *Thread) ToDomain() threads.Domain {
 
 	return threads.Domain{
 		ID:          record.ID,
-		UserID:      record.UserID,
+		Username:    record.Username,
 		User:        record.User.UserProfileToDomain(),
 		CategoryID:  record.CategoryID,
 		Title:       record.Title,
@@ -68,7 +68,7 @@ func FromDomain(domain threads.Domain) Thread {
 
 	return Thread{
 		ID:          domain.ID,
-		UserID:      domain.UserID,
+		Username:    domain.Username,
 		CategoryID:  domain.CategoryID,
 		Title:       domain.Title,
 		Content:     domain.Content,

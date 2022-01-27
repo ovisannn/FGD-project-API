@@ -10,7 +10,7 @@ import (
 
 type ThreadResponse struct {
 	ID          string                        `json:"_id"`
-	UserID      string                        `json:"user_id,omitempty"`
+	Username    string                        `json:"username,omitempty"`
 	User        userResp.UserProfile          `json:"user,omitempty"`
 	CategoryID  string                        `json:"category_id,omitempty"`
 	Title       string                        `json:"title,omitempty"`
@@ -37,7 +37,7 @@ func FromDomain(domain threads.Domain) ThreadResponse {
 
 	return ThreadResponse{
 		ID:          domain.ID,
-		UserID:      domain.UserID,
+		Username:    domain.Username,
 		User:        userResp.UserProfileFromDomain(domain.User),
 		CategoryID:  domain.CategoryID,
 		Title:       domain.Title,
