@@ -77,68 +77,6 @@ func (useCase *ThreadUseCase) Update(ctx context.Context, threadDomain *Domain, 
 	return nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func (useCase *ThreadUseCase) Search(ctx context.Context, q string, sort string) ([]Domain, error) {
 	if sort != "" && sort != "created_at" && sort != "num_votes" && sort != "num_comments" {
 		return []Domain{}, messages.ErrInvalidQueryParam
@@ -147,6 +85,14 @@ func (useCase *ThreadUseCase) Search(ctx context.Context, q string, sort string)
 	result, err := useCase.threadRepo.Search(ctx, q, sort)
 	if err != nil {
 		return []Domain{}, messages.ErrInternalServerError
+	}
+	return result, nil
+}
+
+func (useCase *ThreadUseCase) GetByCategoryID(ctx context.Context, categoryId string) ([]Domain, error) {
+	result, err := useCase.threadRepo.GetByCategoryID(ctx, categoryId)
+	if err != nil {
+		return []Domain{}, err
 	}
 	return result, nil
 }
