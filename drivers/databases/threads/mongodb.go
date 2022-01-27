@@ -129,61 +129,31 @@ func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id strin
 	countComments := bson.M{"num_comments": bson.M{"$size": "$comments"}}
 	convIdToString := bson.M{"thread_id": bson.M{"$toString": "$_id"}}
 
-	userNestedLookup := bson.M{
-		"from":         "user_profile",
-		"localField":   "comments.username",
-		"foreignField": "username",
-		"as":           "comments.user",
-	}
+	// userNestedLookup := bson.M{
+	// 	"from":         "user_profile",
+	// 	"localField":   "comments.username",
+	// 	"foreignField": "username",
+	// 	"as":           "comments.user",
+	// }
 
-	lookupCopy := bson.M{
-		"from":         "threads",
-		"localField":   "_id",
-		"foreignField": "_id",
-		"as":           "threadData",
-	}
+	// lookupCopy := bson.M{
+	// 	"from":         "threads",
+	// 	"localField":   "_id",
+	// 	"foreignField": "_id",
+	// 	"as":           "threadData",
+	// }
 
-	grouping := bson.M{
-		"_id":      "$_id",
-		"comments": bson.M{"$push": "$comments"},
-	}
+	// grouping := bson.M{
+	// 	"_id":      "$_id",
+	// 	"comments": bson.M{"$push": "$comments"},
+	// }
 
-	addFromRoot := bson.M{"threadData.comments": "$comments"}
-	replaceRoot := bson.M{"newRoot": "$threadData"}
+	// addFromRoot := bson.M{"threadData.comments": "$comments"}
+	// replaceRoot := bson.M{"newRoot": "$threadData"}
 
 	query := []bson.M{
 		{
 			"$match": filter,
-		},
-		{
-			"$addFields": convIdToString,
-		},
-		{
-			"$lookup": commentLookup,
-		},
-		{
-			"$unwind": "$comments",
-		},
-		{
-			"$lookup": userNestedLookup,
-		},
-		{
-			"$unwind": "$comments.user",
-		},
-		{
-			"$group": grouping,
-		},
-		{
-			"$lookup": lookupCopy,
-		},
-		{
-			"$addFields": addFromRoot,
-		},
-		{
-			"$unwind": "$threadData",
-		},
-		{
-			"$replaceRoot": replaceRoot,
 		},
 		{
 			"$addFields": convIdToString,
@@ -195,6 +165,9 @@ func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id strin
 			"$lookup": votesLookup,
 		},
 		{
+			"$lookup": commentLookup,
+		},
+		{
 			"$unwind": "$user",
 		},
 		{
@@ -203,6 +176,54 @@ func (repository *MongoDBThreadRepository) GetByID(ctx context.Context, id strin
 		{
 			"$addFields": countComments,
 		},
+		// {
+		// 	"$addFields": convIdToString,
+		// },
+		// {
+		// 	"$lookup": commentLookup,
+		// },
+		// {
+		// 	"$unwind": "$comments",
+		// },
+		// {
+		// 	"$lookup": userNestedLookup,
+		// },
+		// {
+		// 	"$unwind": "$comments.user",
+		// },
+		// {
+		// 	"$group": grouping,
+		// },
+		// {
+		// 	"$lookup": lookupCopy,
+		// },
+		// {
+		// 	"$addFields": addFromRoot,
+		// },
+		// {
+		// 	"$unwind": "$threadData",
+		// },
+		// {
+		// 	"$replaceRoot": replaceRoot,
+		// },
+		// {
+		// 	"$addFields": convIdToString,
+		// },
+		// {
+		// 	"$lookup": userLookup,
+		// },
+		// {
+		// 	"$lookup": votesLookup,
+		// },
+		// {
+		// 	"$unwind": "$user",
+		// },
+		// {
+		// 	"$addFields": countVotes,
+		// },
+		// {
+		// 	"$addFields": countComments,
+		// },
 	}
 
 	cursor, err := repository.Conn.Collection("threads").Aggregate(ctx, query)

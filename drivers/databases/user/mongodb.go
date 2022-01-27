@@ -43,7 +43,7 @@ func (repository *MongoDBUserRepository) Register(ctx context.Context, data *use
 
 	newProfileUser := UserProfile{
 		Username:    newUser.Username,
-		ProfilePict: "gs://disspace-76973.appspot.com/user_profile_img/profile_default.jpg",
+		ProfilePict: "https://firebasestorage.googleapis.com/v0/b/disspace-76973.appspot.com/o/user_profile_img%2Fprofile_default.jpg?alt=media&token=226ac15c-ebb6-4635-a708-2f923fd96808",
 		Bio:         " ",
 		Following:   []string{"0"},
 		Followers:   []string{"0"},
@@ -238,5 +238,5 @@ func (repository *MongoDBUserRepository) Search(ctx context.Context, q string, s
 	if err = cursor.All(ctx, &result); err != nil {
 		return []user.UserProfileDomain{}, err
 	}
-  return result, nil
+	return result, nil
 }
