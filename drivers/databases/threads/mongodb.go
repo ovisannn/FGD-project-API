@@ -329,7 +329,7 @@ func (repository *MongoDBThreadRepository) GetByCategoryID(ctx context.Context, 
 	}
 	for index, item := range result {
 		resultUser := _userDomain.UserProfileDomain{}
-		filterUser := bson.D{{Key: "username", Value: item.UserID}}
+		filterUser := bson.D{{Key: "username", Value: item.Username}}
 		err := repository.Conn.Collection("user_profile").FindOne(ctx, filterUser).Decode(&resultUser)
 		if err != nil {
 			panic(err)
