@@ -15,4 +15,4 @@
 # vendor/
 
 # Config file
-/app/config.json
+# /app/config.json
