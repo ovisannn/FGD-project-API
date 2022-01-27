@@ -72,6 +72,29 @@ func (_m *Repository) GetAll(ctx context.Context, sort string) ([]threads.Domain
 	return r0, r1
 }
 
+// GetByCategoryID provides a mock function with given fields: ctx, categoryId
+func (_m *Repository) GetByCategoryID(ctx context.Context, categoryId string) ([]threads.Domain, error) {
+	ret := _m.Called(ctx, categoryId)
+
+	var r0 []threads.Domain
+	if rf, ok := ret.Get(0).(func(context.Context, string) []threads.Domain); ok {
+		r0 = rf(ctx, categoryId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]threads.Domain)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, categoryId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetByID provides a mock function with given fields: ctx, id
 func (_m *Repository) GetByID(ctx context.Context, id string) (threads.Domain, error) {
 	ret := _m.Called(ctx, id)
