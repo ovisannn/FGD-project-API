@@ -13,7 +13,7 @@ type Config struct {
 	Password string
 	Host     string
 	Port     string
-	Name   string
+	Name     string
 }
 
 func (config *Config) ConnectDB() (*mongo.Database, error) {
@@ -22,6 +22,11 @@ func (config *Config) ConnectDB() (*mongo.Database, error) {
 		config.Password,
 		config.Host,
 		config.Port)
+
+	//uri := fmt.Sprintf("mongodb://%s:%s/%s",
+	//	config.Host,
+	//	config.Port,
+	//	config.Name)
 
 	clientOptions := options.Client()
 	clientOptions.ApplyURI(uri)

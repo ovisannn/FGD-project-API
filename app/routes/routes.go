@@ -85,5 +85,6 @@ func (ctrl *ControllerList) RouteRegister(e *echo.Echo) {
 	baseRoute.GET("/comments/search", ctrl.CommentController.Search)
 	baseRoute.GET("/users/search", ctrl.UserController.Search)
 
-	baseRoute.GET("/test", ctrl.UserController.Test, jwtAuth)
+	baseRoute.GET("/test", ctrl.UserController.Test)
+	//baseRoute.GET("/test", ctrl.UserController.Test, jwtAuth)
 }

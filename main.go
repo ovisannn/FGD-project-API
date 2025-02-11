@@ -48,7 +48,6 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-
 }
 
 func main() {
@@ -72,6 +71,7 @@ func main() {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 
+	e.Use(middleware.Logger()) // Add this line to log every request
 	e.Pre(middleware.RemoveTrailingSlash())
 	timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 
